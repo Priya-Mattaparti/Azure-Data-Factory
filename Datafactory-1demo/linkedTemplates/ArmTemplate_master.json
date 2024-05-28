@@ -1,0 +1,369 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "Datafactory-1demo"
+		},
+		"FileServer1_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'FileServer1'"
+		},
+		"LS_ABS_AutoVNIR_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LS_ABS_AutoVNIR'"
+		},
+		"SqlServer1_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'SqlServer1'"
+		},
+		"azsqldblink_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'azsqldblink'"
+		},
+		"pocDataLakeStoragegen2_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'pocDataLakeStoragegen2'"
+		},
+		"pocblobstorage_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'pocblobstorage'"
+		},
+		"ABS_LS_SAS_Token_properties_typeProperties_sasUri_secretName": {
+			"type": "string",
+			"defaultValue": "SAS-ABS-SAS-URI-Adfstorageaccount"
+		},
+		"AzureBlobStorage_SAS_test_sasUri": {
+			"type": "secureString",
+			"metadata": "Secure string for 'sasUri' of 'AzureBlobStorage_SAS_test'"
+		},
+		"AzureDataLakeStorage_SPA_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://adfgen2account.dfs.core.windows.net/"
+		},
+		"AzureDataLakeStorage_SPA_properties_typeProperties_tenant": {
+			"type": "string",
+			"defaultValue": "ced0eae1-0a0e-4ee4-9718-ca543d33fcb2"
+		},
+		"AzureDataLakeStorage_SPA_properties_typeProperties_servicePrincipalId": {
+			"type": "string",
+			"defaultValue": "e75b636f6d3c4114b8718cda29438ad8"
+		},
+		"AzureKeyVault_ADF_ManagedUserIdentity_properties_typeProperties_baseUrl": {
+			"type": "string",
+			"defaultValue": "https://ADFLinkSKeys.vault.azure.net/"
+		},
+		"AzureKeyVault_ADF_V1_properties_typeProperties_baseUrl": {
+			"type": "string",
+			"defaultValue": "https://ADFLinkSKeys.vault.azure.net/"
+		},
+		"AzureKeyVault_Vault_access_policy_properties_typeProperties_baseUrl": {
+			"type": "string",
+			"defaultValue": "https://LSAdlsVaultAccessPolicy.vault.azure.net/"
+		},
+		"FileServer1_properties_typeProperties_host": {
+			"type": "string",
+			"defaultValue": "\\\\OSI-L-0688\\sample"
+		},
+		"FileServer1_properties_typeProperties_userId": {
+			"type": "string",
+			"defaultValue": "pmattaparti"
+		},
+		"LS_ABS_AccountKey_properties_typeProperties_connectionString_secretName": {
+			"type": "string",
+			"defaultValue": "ABS-adfgen2account-conn-String"
+		},
+		"LS_AzureBlobStorage_adfstorageaccount_properties_typeProperties_sasUri_secretName": {
+			"type": "string",
+			"defaultValue": "SAS-ABS-SAS-URI-Adfstorageaccount"
+		},
+		"Ls_ABS_adfstorageaccounts_UAMI_properties_typeProperties_serviceEndpoint": {
+			"type": "string",
+			"defaultValue": "https://adfstrorageaccounts.blob.core.windows.net/"
+		},
+		"Ls_ADLSGen2_Adfgen2accountstorage_SAMI_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "@{linkedService().url_storage}"
+		},
+		"RestServicemp_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "\thttps://dummy.restapiexample.com/api/v1/employees"
+		},
+		"SqlServer1_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "sqladfdbserver"
+		},
+		"SqlServer1_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "sqfadfdb"
+		},
+		"SqlServer1_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "sqladfuser"
+		},
+		"WebConnector_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://www.careerpower.in/states-and-capitals-of-india.html"
+		},
+		"pocDataLakeStoragegen2_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://adfgen2account.dfs.core.windows.net/"
+		},
+		"Master_trigger_properties_pipeline_parameters_windowStart": {
+			"type": "string",
+			"defaultValue": "04/15/2024 17:40:00"
+		},
+		"Master_trigger_properties_pipeline_parameters_windowEnd": {
+			"type": "string",
+			"defaultValue": "05//2024 18:45:00"
+		},
+		"Trigger_gwn_properties_pipeline_parameters_windowStart": {
+			"type": "string",
+			"defaultValue": "@trigger().outputs.windowStartTime"
+		},
+		"Trigger_gwn_properties_pipeline_parameters_windowEnd": {
+			"type": "string",
+			"defaultValue": "@trigger().outputs.windowEndTime"
+		},
+		"trigger_ms_properties_pipeline_parameters_windowStart": {
+			"type": "string",
+			"defaultValue": "04/22/2024, 12:00:00 AM "
+		},
+		"trigger_ms_properties_pipeline_parameters_windowEnd": {
+			"type": "string",
+			"defaultValue": "04/22/2024, 12:15:00 AM "
+		},
+		"EndpointABSVNIR_properties_privateLinkResourceId": {
+			"type": "string",
+			"defaultValue": "/subscriptions/6053644e-c095-4d41-90ad-43797b9dfe90/resourceGroups/darafactoryseries/providers/Microsoft.Storage/storageAccounts/adfstrorageaccounts"
+		},
+		"EndpointABSVNIR_properties_groupId": {
+			"type": "string",
+			"defaultValue": "blob"
+		},
+		"EndpointABSVNIR_properties_fqdns": {
+			"type": "array",
+			"defaultValue": [
+				"adfstrorageaccounts.blob.core.windows.net"
+			]
+		},
+		"containerUri": {
+			"type": "string",
+			"metadata": "URI to storage account containing linked ARM templates"
+		},
+		"containerSasToken": {
+			"type": "string",
+			"metadata": "Sas token to storage account containing linked ARM templates"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "Datafactory-1demo_ArmTemplate_0",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_0.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"SqlServer1_password": {
+						"value": "[parameters('SqlServer1_password')]"
+					},
+					"azsqldblink_connectionString": {
+						"value": "[parameters('azsqldblink_connectionString')]"
+					},
+					"pocDataLakeStoragegen2_accountKey": {
+						"value": "[parameters('pocDataLakeStoragegen2_accountKey')]"
+					},
+					"pocblobstorage_connectionString": {
+						"value": "[parameters('pocblobstorage_connectionString')]"
+					},
+					"AzureBlobStorage_SAS_test_sasUri": {
+						"value": "[parameters('AzureBlobStorage_SAS_test_sasUri')]"
+					},
+					"AzureKeyVault_ADF_V1_properties_typeProperties_baseUrl": {
+						"value": "[parameters('AzureKeyVault_ADF_V1_properties_typeProperties_baseUrl')]"
+					},
+					"AzureKeyVault_Vault_access_policy_properties_typeProperties_baseUrl": {
+						"value": "[parameters('AzureKeyVault_Vault_access_policy_properties_typeProperties_baseUrl')]"
+					},
+					"Ls_ADLSGen2_Adfgen2accountstorage_SAMI_properties_typeProperties_url": {
+						"value": "[parameters('Ls_ADLSGen2_Adfgen2accountstorage_SAMI_properties_typeProperties_url')]"
+					},
+					"RestServicemp_properties_typeProperties_url": {
+						"value": "[parameters('RestServicemp_properties_typeProperties_url')]"
+					},
+					"SqlServer1_properties_typeProperties_server": {
+						"value": "[parameters('SqlServer1_properties_typeProperties_server')]"
+					},
+					"SqlServer1_properties_typeProperties_database": {
+						"value": "[parameters('SqlServer1_properties_typeProperties_database')]"
+					},
+					"SqlServer1_properties_typeProperties_userName": {
+						"value": "[parameters('SqlServer1_properties_typeProperties_userName')]"
+					},
+					"pocDataLakeStoragegen2_properties_typeProperties_url": {
+						"value": "[parameters('pocDataLakeStoragegen2_properties_typeProperties_url')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "Datafactory-1demo_ArmTemplate_1",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_1.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'Datafactory-1demo_ArmTemplate_0')]"
+			]
+		},
+		{
+			"name": "Datafactory-1demo_ArmTemplate_2",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_2.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"FileServer1_password": {
+						"value": "[parameters('FileServer1_password')]"
+					},
+					"ABS_LS_SAS_Token_properties_typeProperties_sasUri_secretName": {
+						"value": "[parameters('ABS_LS_SAS_Token_properties_typeProperties_sasUri_secretName')]"
+					},
+					"AzureDataLakeStorage_SPA_properties_typeProperties_url": {
+						"value": "[parameters('AzureDataLakeStorage_SPA_properties_typeProperties_url')]"
+					},
+					"AzureDataLakeStorage_SPA_properties_typeProperties_tenant": {
+						"value": "[parameters('AzureDataLakeStorage_SPA_properties_typeProperties_tenant')]"
+					},
+					"AzureDataLakeStorage_SPA_properties_typeProperties_servicePrincipalId": {
+						"value": "[parameters('AzureDataLakeStorage_SPA_properties_typeProperties_servicePrincipalId')]"
+					},
+					"AzureKeyVault_ADF_ManagedUserIdentity_properties_typeProperties_baseUrl": {
+						"value": "[parameters('AzureKeyVault_ADF_ManagedUserIdentity_properties_typeProperties_baseUrl')]"
+					},
+					"FileServer1_properties_typeProperties_host": {
+						"value": "[parameters('FileServer1_properties_typeProperties_host')]"
+					},
+					"FileServer1_properties_typeProperties_userId": {
+						"value": "[parameters('FileServer1_properties_typeProperties_userId')]"
+					},
+					"LS_ABS_AccountKey_properties_typeProperties_connectionString_secretName": {
+						"value": "[parameters('LS_ABS_AccountKey_properties_typeProperties_connectionString_secretName')]"
+					},
+					"LS_AzureBlobStorage_adfstorageaccount_properties_typeProperties_sasUri_secretName": {
+						"value": "[parameters('LS_AzureBlobStorage_adfstorageaccount_properties_typeProperties_sasUri_secretName')]"
+					},
+					"Ls_ABS_adfstorageaccounts_UAMI_properties_typeProperties_serviceEndpoint": {
+						"value": "[parameters('Ls_ABS_adfstorageaccounts_UAMI_properties_typeProperties_serviceEndpoint')]"
+					},
+					"WebConnector_properties_typeProperties_url": {
+						"value": "[parameters('WebConnector_properties_typeProperties_url')]"
+					},
+					"EndpointABSVNIR_properties_privateLinkResourceId": {
+						"value": "[parameters('EndpointABSVNIR_properties_privateLinkResourceId')]"
+					},
+					"EndpointABSVNIR_properties_groupId": {
+						"value": "[parameters('EndpointABSVNIR_properties_groupId')]"
+					},
+					"EndpointABSVNIR_properties_fqdns": {
+						"value": "[parameters('EndpointABSVNIR_properties_fqdns')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'Datafactory-1demo_ArmTemplate_1')]"
+			]
+		},
+		{
+			"name": "Datafactory-1demo_ArmTemplate_3",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_3.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"LS_ABS_AutoVNIR_connectionString": {
+						"value": "[parameters('LS_ABS_AutoVNIR_connectionString')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'Datafactory-1demo_ArmTemplate_2')]"
+			]
+		},
+		{
+			"name": "Datafactory-1demo_ArmTemplate_4",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_4.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"Trigger_gwn_properties_pipeline_parameters_windowStart": {
+						"value": "[parameters('Trigger_gwn_properties_pipeline_parameters_windowStart')]"
+					},
+					"Trigger_gwn_properties_pipeline_parameters_windowEnd": {
+						"value": "[parameters('Trigger_gwn_properties_pipeline_parameters_windowEnd')]"
+					},
+					"Master_trigger_properties_pipeline_parameters_windowStart": {
+						"value": "[parameters('Master_trigger_properties_pipeline_parameters_windowStart')]"
+					},
+					"Master_trigger_properties_pipeline_parameters_windowEnd": {
+						"value": "[parameters('Master_trigger_properties_pipeline_parameters_windowEnd')]"
+					},
+					"trigger_ms_properties_pipeline_parameters_windowStart": {
+						"value": "[parameters('trigger_ms_properties_pipeline_parameters_windowStart')]"
+					},
+					"trigger_ms_properties_pipeline_parameters_windowEnd": {
+						"value": "[parameters('trigger_ms_properties_pipeline_parameters_windowEnd')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'Datafactory-1demo_ArmTemplate_3')]"
+			]
+		}
+	]
+}

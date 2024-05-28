@@ -1,0 +1,116 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "Datafactory-1demo"
+		},
+		"FileServer1_password": {
+			"value": ""
+		},
+		"LS_ABS_AutoVNIR_connectionString": {
+			"value": ""
+		},
+		"SqlServer1_password": {
+			"value": ""
+		},
+		"azsqldblink_connectionString": {
+			"value": ""
+		},
+		"pocDataLakeStoragegen2_accountKey": {
+			"value": ""
+		},
+		"pocblobstorage_connectionString": {
+			"value": ""
+		},
+		"ABS_LS_SAS_Token_properties_typeProperties_sasUri_secretName": {
+			"value": "SAS-ABS-SAS-URI-Adfstorageaccount"
+		},
+		"AzureBlobStorage_SAS_test_sasUri": {
+			"value": ""
+		},
+		"AzureDataLakeStorage_SPA_properties_typeProperties_url": {
+			"value": "https://adfgen2account.dfs.core.windows.net/"
+		},
+		"AzureDataLakeStorage_SPA_properties_typeProperties_tenant": {
+			"value": "ced0eae1-0a0e-4ee4-9718-ca543d33fcb2"
+		},
+		"AzureDataLakeStorage_SPA_properties_typeProperties_servicePrincipalId": {
+			"value": "e75b636f6d3c4114b8718cda29438ad8"
+		},
+		"AzureKeyVault_ADF_ManagedUserIdentity_properties_typeProperties_baseUrl": {
+			"value": "https://ADFLinkSKeys.vault.azure.net/"
+		},
+		"AzureKeyVault_ADF_V1_properties_typeProperties_baseUrl": {
+			"value": "https://ADFLinkSKeys.vault.azure.net/"
+		},
+		"AzureKeyVault_Vault_access_policy_properties_typeProperties_baseUrl": {
+			"value": "https://LSAdlsVaultAccessPolicy.vault.azure.net/"
+		},
+		"FileServer1_properties_typeProperties_host": {
+			"value": "\\\\OSI-L-0688\\sample"
+		},
+		"FileServer1_properties_typeProperties_userId": {
+			"value": "pmattaparti"
+		},
+		"LS_ABS_AccountKey_properties_typeProperties_connectionString_secretName": {
+			"value": "ABS-adfgen2account-conn-String"
+		},
+		"LS_AzureBlobStorage_adfstorageaccount_properties_typeProperties_sasUri_secretName": {
+			"value": "SAS-ABS-SAS-URI-Adfstorageaccount"
+		},
+		"Ls_ABS_adfstorageaccounts_UAMI_properties_typeProperties_serviceEndpoint": {
+			"value": "https://adfstrorageaccounts.blob.core.windows.net/"
+		},
+		"Ls_ADLSGen2_Adfgen2accountstorage_SAMI_properties_typeProperties_url": {
+			"value": "@{linkedService().url_storage}"
+		},
+		"RestServicemp_properties_typeProperties_url": {
+			"value": "\thttps://dummy.restapiexample.com/api/v1/employees"
+		},
+		"SqlServer1_properties_typeProperties_server": {
+			"value": "sqladfdbserver"
+		},
+		"SqlServer1_properties_typeProperties_database": {
+			"value": "sqfadfdb"
+		},
+		"SqlServer1_properties_typeProperties_userName": {
+			"value": "sqladfuser"
+		},
+		"WebConnector_properties_typeProperties_url": {
+			"value": "https://www.careerpower.in/states-and-capitals-of-india.html"
+		},
+		"pocDataLakeStoragegen2_properties_typeProperties_url": {
+			"value": "https://adfgen2account.dfs.core.windows.net/"
+		},
+		"Master_trigger_properties_pipeline_parameters_windowStart": {
+			"value": "04/15/2024 17:40:00"
+		},
+		"Master_trigger_properties_pipeline_parameters_windowEnd": {
+			"value": "05//2024 18:45:00"
+		},
+		"Trigger_gwn_properties_pipeline_parameters_windowStart": {
+			"value": "@trigger().outputs.windowStartTime"
+		},
+		"Trigger_gwn_properties_pipeline_parameters_windowEnd": {
+			"value": "@trigger().outputs.windowEndTime"
+		},
+		"trigger_ms_properties_pipeline_parameters_windowStart": {
+			"value": "04/22/2024, 12:00:00 AM "
+		},
+		"trigger_ms_properties_pipeline_parameters_windowEnd": {
+			"value": "04/22/2024, 12:15:00 AM "
+		},
+		"EndpointABSVNIR_properties_privateLinkResourceId": {
+			"value": "/subscriptions/6053644e-c095-4d41-90ad-43797b9dfe90/resourceGroups/darafactoryseries/providers/Microsoft.Storage/storageAccounts/adfstrorageaccounts"
+		},
+		"EndpointABSVNIR_properties_groupId": {
+			"value": "blob"
+		},
+		"EndpointABSVNIR_properties_fqdns": {
+			"value": [
+				"adfstrorageaccounts.blob.core.windows.net"
+			]
+		}
+	}
+}
