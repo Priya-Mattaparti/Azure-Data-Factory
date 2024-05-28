@@ -1,0 +1,34 @@
+{
+	"name": "pipeline_ppp",
+	"properties": {
+		"activities": [
+			{
+				"name": "Data flowPPP",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "PPPdataflowtransformation",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2024-05-17T10:06:35Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

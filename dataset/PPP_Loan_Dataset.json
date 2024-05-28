@@ -1,0 +1,89 @@
+{
+	"name": "PPP_Loan_Dataset",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ABS_LS_SAS_Token",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "PPP_data_150k_plus.csv",
+				"container": "adfcondemo"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "LoanRange",
+				"type": "String"
+			},
+			{
+				"name": "BusinessName",
+				"type": "String"
+			},
+			{
+				"name": "Address",
+				"type": "String"
+			},
+			{
+				"name": "City",
+				"type": "String"
+			},
+			{
+				"name": "State",
+				"type": "String"
+			},
+			{
+				"name": "Zip",
+				"type": "String"
+			},
+			{
+				"name": "NAICSCode",
+				"type": "String"
+			},
+			{
+				"name": "BusinessType",
+				"type": "String"
+			},
+			{
+				"name": "RaceEthnicity",
+				"type": "String"
+			},
+			{
+				"name": "Gender",
+				"type": "String"
+			},
+			{
+				"name": "Veteran",
+				"type": "String"
+			},
+			{
+				"name": "NonProfit",
+				"type": "String"
+			},
+			{
+				"name": "JobsRetained",
+				"type": "String"
+			},
+			{
+				"name": "DateApproved",
+				"type": "String"
+			},
+			{
+				"name": "Lender",
+				"type": "String"
+			},
+			{
+				"name": "CD",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

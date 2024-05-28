@@ -1,0 +1,7 @@
+{
+	"name": "onpremMysqlruntime",
+	"properties": {
+		"type": "SelfHosted",
+		"description": "on prem"
+	}
+}

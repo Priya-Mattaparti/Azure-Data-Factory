@@ -1,0 +1,20 @@
+{
+	"name": "Datafactory-1demo",
+	"properties": {
+		"globalConfigurations": {
+			"PipelineBillingEnabled": "true"
+		}
+	},
+	"location": "southindia",
+	"identity": {
+		"type": "SystemAssigned,UserAssigned",
+		"principalId": "d6510a74-b4d9-47c7-a807-3e45ab5f491f",
+		"tenantId": "ced0eae1-0a0e-4ee4-9718-ca543d33fcb2",
+		"userAssignedIdentities": {
+			"/subscriptions/6053644e-c095-4d41-90ad-43797b9dfe90/resourcegroups/darafactoryseries/providers/Microsoft.ManagedIdentity/userAssignedIdentities/ADF_Managed_Id": {
+				"clientId": "ea9ef025-8733-4ee7-9b2d-4bf8897229e2",
+				"principalId": "be6b565d-cdce-4e4a-8c2a-0687f089b7b4"
+			}
+		}
+	}
+}

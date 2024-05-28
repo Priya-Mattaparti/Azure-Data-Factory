@@ -1,0 +1,17 @@
+{
+	"name": "Ls_ABS_adfstorageaccounts_UAMI",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"description": "Blob storage linked service with User Assigned Managed Identity",
+		"annotations": [],
+		"type": "AzureBlobStorage",
+		"typeProperties": {
+			"serviceEndpoint": "https://adfstrorageaccounts.blob.core.windows.net/",
+			"accountKind": "StorageV2",
+			"credential": {
+				"referenceName": "credential_ADF_Managed_Id",
+				"type": "CredentialReference"
+			}
+		}
+	}
+}

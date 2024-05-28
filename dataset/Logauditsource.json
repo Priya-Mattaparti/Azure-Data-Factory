@@ -1,0 +1,33 @@
+{
+	"name": "Logauditsource",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "pocblobstorage",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"srclogfilename": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": {
+					"value": "@dataset().srclogfilename",
+					"type": "Expression"
+				},
+				"folderPath": "pipelinelogs",
+				"container": "adfcondemo"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

@@ -1,0 +1,22 @@
+{
+	"name": "AzureDataLakeStorage_SPA",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "AzureBlobFS",
+		"typeProperties": {
+			"url": "https://adfgen2account.dfs.core.windows.net/",
+			"tenant": "ced0eae1-0a0e-4ee4-9718-ca543d33fcb2",
+			"servicePrincipalId": "e75b636f6d3c4114b8718cda29438ad8",
+			"servicePrincipalCredentialType": "ServicePrincipalKey",
+			"servicePrincipalCredential": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "AzureKeyVault_ADF_V1",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "ADLSGen2-storage-ADF"
+			}
+		}
+	}
+}

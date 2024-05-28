@@ -1,0 +1,16 @@
+{
+	"name": "WebTableDataset1",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "WebConnector",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "WebTable",
+		"schema": [],
+		"typeProperties": {
+			"index": 0
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

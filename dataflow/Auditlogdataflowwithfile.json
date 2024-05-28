@@ -1,0 +1,96 @@
+{
+	"name": "Auditlogdataflowwithfile",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "Dumylogfile",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				},
+				{
+					"dataset": {
+						"referenceName": "Logauditsource",
+						"type": "DatasetReference"
+					},
+					"name": "logfilesource"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "Logauditsink",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "union1"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     ADFName as string,",
+				"     PipelineName as string,",
+				"     Status as string,",
+				"     RunID as string,",
+				"     TriggerName as string,",
+				"     TriggerTime as string,",
+				"     LogFileName as string",
+				"}",
+				"source(output(",
+				"          log as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source1",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     wildcardPaths:[('pipelinelogs/'+$LogFileName)]) ~> logfilesource",
+				"source1 derive(ADFName = $ADFName,",
+				"          PipelineName = $PipelineName,",
+				"          Status = $Status,",
+				"          RunID = $RunID,",
+				"          TriggerName = $TriggerName,",
+				"          TriggerTime = $TriggerTime) ~> derivedColumn1",
+				"derivedColumn1 select(mapColumn(",
+				"          ADFName,",
+				"          PipelineName,",
+				"          Status,",
+				"          RunID,",
+				"          TriggerName,",
+				"          TriggerTime",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1, logfilesource union(byName: true)~> union1",
+				"union1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:[($LogFileName)],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          ADFName,",
+				"          PipelineName,",
+				"          Status,",
+				"          RunID,",
+				"          TriggerName,",
+				"          TriggerTime",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> sink1"
+			]
+		}
+	}
+}

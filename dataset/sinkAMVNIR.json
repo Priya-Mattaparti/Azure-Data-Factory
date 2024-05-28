@@ -1,0 +1,18 @@
+{
+	"name": "sinkAMVNIR",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_ABS_AutoVNIR",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"container": "output-req"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

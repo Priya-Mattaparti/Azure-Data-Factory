@@ -1,0 +1,31 @@
+{
+	"name": "Master_trigger",
+	"properties": {
+		"description": "Trigger that executes full load and incremental load pipeline",
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipeline": {
+			"pipelineReference": {
+				"referenceName": "multipefolderspipeline_full_incremental_V1",
+				"type": "PipelineReference"
+			},
+			"parameters": {
+				"windowStart": "04/15/2024 17:40:00",
+				"windowEnd": "05//2024 18:45:00"
+			}
+		},
+		"type": "TumblingWindowTrigger",
+		"typeProperties": {
+			"frequency": "Minute",
+			"interval": 15,
+			"startTime": "2024-04-19T00:00:00Z",
+			"endTime": "2024-05-09T12:00:00Z",
+			"delay": "00:00:00",
+			"maxConcurrency": 50,
+			"retryPolicy": {
+				"intervalInSeconds": 30
+			},
+			"dependsOn": []
+		}
+	}
+}

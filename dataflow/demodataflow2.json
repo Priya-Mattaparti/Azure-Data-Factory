@@ -1,0 +1,237 @@
+{
+	"name": "demodataflow2",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DFJson",
+						"type": "DatasetReference"
+					},
+					"name": "JsonSource"
+				},
+				{
+					"dataset": {
+						"referenceName": "datafile2",
+						"type": "DatasetReference"
+					},
+					"name": "salesdatafile"
+				},
+				{
+					"dataset": {
+						"referenceName": "FinanceEmpfile",
+						"type": "DatasetReference"
+					},
+					"name": "Finanacedatafile"
+				},
+				{
+					"dataset": {
+						"referenceName": "AzureSqlTable1",
+						"type": "DatasetReference"
+					},
+					"name": "Employeetablesource"
+				},
+				{
+					"dataset": {
+						"referenceName": "newempdatafile",
+						"type": "DatasetReference"
+					},
+					"name": "newempdatasource"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DFfiles",
+						"type": "DatasetReference"
+					},
+					"name": "Flattensink",
+					"rejectedDataLinkedService": {
+						"referenceName": "pocDataLakeStoragegen2",
+						"type": "LinkedServiceReference"
+					}
+				},
+				{
+					"dataset": {
+						"referenceName": "DFfiles",
+						"type": "DatasetReference"
+					},
+					"name": "Formatterssink",
+					"rejectedDataLinkedService": {
+						"referenceName": "pocDataLakeStoragegen2",
+						"type": "LinkedServiceReference"
+					}
+				},
+				{
+					"name": "cachesink"
+				},
+				{
+					"dataset": {
+						"referenceName": "NewDataUpdatedfile",
+						"type": "DatasetReference"
+					},
+					"name": "empsink"
+				}
+			],
+			"transformations": [
+				{
+					"name": "flatten1"
+				},
+				{
+					"name": "parseaddress"
+				},
+				{
+					"name": "stringifyContact"
+				},
+				{
+					"name": "parseconcat"
+				},
+				{
+					"name": "union1"
+				},
+				{
+					"name": "EmployeeIDKey"
+				},
+				{
+					"name": "derivedEmployeeIDColumntoUpdated"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Address as string,",
+				"          contact as (mail as string, mobile as long),",
+				"          employee_age as short,",
+				"          employee_name as string,",
+				"          employee_salary as integer,",
+				"          id as short,",
+				"          skills as string[]",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     documentForm: 'arrayOfDocuments') ~> JsonSource",
+				"source(output(",
+				"          EmployeeID as string,",
+				"          Name as string,",
+				"          Department as string,",
+				"          Salary as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> salesdatafile",
+				"source(output(",
+				"          EmployeeID as string,",
+				"          Name as string,",
+				"          Age as string,",
+				"          Department as string,",
+				"          Salary as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> Finanacedatafile",
+				"source(output(",
+				"          MaxEmpID as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'select max(EmployeeID) as MaxEmpID from dbo.emp',",
+				"     format: 'query') ~> Employeetablesource",
+				"source(output(",
+				"          Name as string,",
+				"          Age as integer,",
+				"          Department as string,",
+				"          Salary as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     inferDriftedColumnTypes: true,",
+				"     ignoreNoFilesFound: false) ~> newempdatasource",
+				"JsonSource foldDown(unroll(skills),",
+				"     mapColumn(",
+				"          id,",
+				"          employee_name,",
+				"          employee_salary,",
+				"          employee_age,",
+				"          skills",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> flatten1",
+				"JsonSource parse(Address = Address ? (state as string,",
+				"          street as string,",
+				"          pincode as string),",
+				"     partitionBy('hash', 1),",
+				"     format: 'delimited',",
+				"     columnNamesAsHeader: false,",
+				"     columnDelimiter: '|',",
+				"     nullValue: '') ~> parseaddress",
+				"parseaddress stringify(contact = contact ? string,",
+				"     format: 'json') ~> stringifyContact",
+				"stringifyContact parse({contact information} = contact ? (mail as string,",
+				"          mobile as long),",
+				"     partitionBy('hash', 1),",
+				"     format: 'json',",
+				"     documentForm: 'singleDocument') ~> parseconcat",
+				"salesdatafile, Finanacedatafile union(byName: true)~> union1",
+				"newempdatasource keyGenerate(output(EmployeeID as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> EmployeeIDKey",
+				"EmployeeIDKey derive(EmployeeID = toInteger(EmployeeID + cachesink#outputs()[1].MaxEmpID)) ~> derivedEmployeeIDColumntoUpdated",
+				"flatten1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['FlattenOData.csv'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> Flattensink",
+				"parseconcat sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['FormattedData.csv'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          id,",
+				"          employee_name,",
+				"          employee_age,",
+				"          employee_salary,",
+				"          skills,",
+				"          mail = {contact information}.mail,",
+				"          mobile = {contact information}.mobile,",
+				"          state = Address.state,",
+				"          street = Address.street,",
+				"          pincode = Address.pincode",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> Formatterssink",
+				"Employeetablesource sink(validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     store: 'cache',",
+				"     format: 'inline',",
+				"     output: false,",
+				"     saveOrder: 1) ~> cachesink",
+				"derivedEmployeeIDColumntoUpdated sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     saveOrder: 1,",
+				"     mapColumn(",
+				"          EmployeeID,",
+				"          Name,",
+				"          Age,",
+				"          Department,",
+				"          Salary",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> empsink"
+			]
+		}
+	}
+}

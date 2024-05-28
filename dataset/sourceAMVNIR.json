@@ -1,0 +1,19 @@
+{
+	"name": "sourceAMVNIR",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_ABS_AutoVNIR",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "states.csv",
+				"container": "adfcondemo"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

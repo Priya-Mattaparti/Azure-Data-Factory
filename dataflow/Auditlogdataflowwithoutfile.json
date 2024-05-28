@@ -1,0 +1,81 @@
+{
+	"name": "Auditlogdataflowwithoutfile",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "Dumylogfile",
+						"type": "DatasetReference"
+					},
+					"name": "Dummytsource"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "Logauditsink",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "select1"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     ADFName as string,",
+				"     PipelineName as string,",
+				"     Status as string,",
+				"     RunID as string,",
+				"     TriggerName as string,",
+				"     TriggerTime as string,",
+				"     LogFileName as string",
+				"}",
+				"source(output(",
+				"          log as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> Dummytsource",
+				"Dummytsource derive(ADFName = $ADFName,",
+				"          PipelineName = $PipelineName,",
+				"          Status = $Status,",
+				"          RunID = $RunID,",
+				"          TriggerName = $TriggerName,",
+				"          TriggerTime = $TriggerTime) ~> derivedColumn1",
+				"derivedColumn1 select(mapColumn(",
+				"          ADFName,",
+				"          PipelineName,",
+				"          Status,",
+				"          RunID,",
+				"          TriggerName,",
+				"          TriggerTime",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:[($LogFileName)],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          ADFName,",
+				"          PipelineName,",
+				"          Status,",
+				"          RunID,",
+				"          TriggerName,",
+				"          TriggerTime",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> sink1"
+			]
+		}
+	}
+}

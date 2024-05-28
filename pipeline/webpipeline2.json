@@ -1,0 +1,58 @@
+{
+	"name": "webpipeline2",
+	"properties": {
+		"activities": [
+			{
+				"name": "readrestapi",
+				"type": "WebActivity",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"method": "GET",
+					"url": "https://jsonplaceholder.typicode.com/users"
+				}
+			},
+			{
+				"name": "otptoblob",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "readrestapi",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"method": "PUT",
+					"headers": {
+						"x-ms-blob-type": "BlockBlob"
+					},
+					"url": "https://adfstrorageaccounts.blob.core.windows.net/webactivityoutput/weboutput.json?sp=racw&st=2024-04-16T10:45:47Z&se=2024-04-16T18:45:47Z&spr=https&sv=2022-11-02&sr=c&sig=krdS4qJeRT1iePmJf%2B7AzRzGC7OtlgShC0d8GczU0TM%3D",
+					"body": {
+						"value": "@activity('readrestapi').output",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2024-04-16T10:53:31Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

@@ -1,0 +1,18 @@
+{
+	"name": "Ls_ADLSGen2_Adfgen2accountstorage_SAMI",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"description": "creating data lake storage  using  sys assigned managed identity",
+		"parameters": {
+			"url_storage": {
+				"type": "string",
+				"defaultValue": "https://adfgen2account.dfs.core.windows.net/"
+			}
+		},
+		"annotations": [],
+		"type": "AzureBlobFS",
+		"typeProperties": {
+			"url": "@{linkedService().url_storage}"
+		}
+	}
+}

@@ -1,0 +1,232 @@
+{
+	"name": "demodataflow1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DfS1",
+						"type": "DatasetReference"
+					},
+					"name": "employee"
+				},
+				{
+					"dataset": {
+						"referenceName": "DfS2",
+						"type": "DatasetReference"
+					},
+					"name": "department"
+				},
+				{
+					"dataset": {
+						"referenceName": "azsqldb",
+						"type": "DatasetReference"
+					},
+					"name": "finanaceEmployeetable"
+				},
+				{
+					"dataset": {
+						"referenceName": "FinanceEmpfile",
+						"type": "DatasetReference"
+					},
+					"name": "FinanaceEmpfile"
+				},
+				{
+					"dataset": {
+						"referenceName": "DfS3",
+						"type": "DatasetReference"
+					},
+					"name": "UnpivotDatasource"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DFfiles",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "join1"
+				},
+				{
+					"name": "UsernameAndFullnameComns"
+				},
+				{
+					"name": "aggregateonDepart"
+				},
+				{
+					"name": "splitbasedondepartmentname"
+				},
+				{
+					"name": "selectExceptdepartmentID"
+				},
+				{
+					"name": "sortAgeBelow"
+				},
+				{
+					"name": "RowsDsntExists"
+				},
+				{
+					"name": "pivotonGender"
+				},
+				{
+					"name": "unpivot1"
+				},
+				{
+					"name": "window1"
+				},
+				{
+					"name": "filterFisrtRankRecords"
+				},
+				{
+					"name": "lookupfornewrecords"
+				},
+				{
+					"name": "join2"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          EmployeeID as string,",
+				"          FirstName as string,",
+				"          LastName as string,",
+				"          Email as string,",
+				"          DepartmentID as string,",
+				"          Age as string,",
+				"          Gender as string,",
+				"          Salary as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> employee",
+				"source(output(",
+				"          DepartmentID as string,",
+				"          DepartmentName as string,",
+				"          Location as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> department",
+				"source(output(",
+				"          EmployeeID as string,",
+				"          Name as string,",
+				"          Age as string,",
+				"          Department as string,",
+				"          Salary as string,",
+				"          InsertedAt as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> finanaceEmployeetable",
+				"source(output(",
+				"          EmployeeID as string,",
+				"          Name as string,",
+				"          Age as string,",
+				"          Department as string,",
+				"          Salary as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> FinanaceEmpfile",
+				"source(output(",
+				"          Vendor as string,",
+				"          Apple as string,",
+				"          Beetroot as string,",
+				"          Carrot as string,",
+				"          Dates as string,",
+				"          Kiwi as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> UnpivotDatasource",
+				"UsernameAndFullnameComns, department join(employee@DepartmentID == department@DepartmentID,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"employee derive(UserName = lower(concat(substring(FirstName,1,1),LastName)),",
+				"          FullName = concat(FirstName,LastName),",
+				"     partitionBy('roundRobin', 2)) ~> UsernameAndFullnameComns",
+				"join1 aggregate(groupBy(DepartmentName),",
+				"     TotalEmployeesPerDepartment = count(EmployeeID)) ~> aggregateonDepart",
+				"selectExceptdepartmentID split(lesserOrEqual(Age,'30'),",
+				"     greater(Age,'30')&&lesserOrEqual(Age,'40'),",
+				"     disjoint: false) ~> splitbasedondepartmentname@(Below30, Above30, experiencedAbove40)",
+				"join1 select(mapColumn(",
+				"          EmployeeID,",
+				"          FirstName,",
+				"          LastName,",
+				"          Email,",
+				"          Age,",
+				"          Gender,",
+				"          UserName,",
+				"          FullName,",
+				"          DepartmentName,",
+				"          Location",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectExceptdepartmentID",
+				"splitbasedondepartmentname@Below30 sort(asc(toInteger(EmployeeID), true),",
+				"     caseInsensitive: true) ~> sortAgeBelow",
+				"FinanaceEmpfile, finanaceEmployeetable exists(FinanaceEmpfile@EmployeeID == finanaceEmployeetable@EmployeeID,",
+				"     negate:true,",
+				"     broadcast: 'auto')~> RowsDsntExists",
+				"join1 pivot(groupBy(DepartmentName),",
+				"     pivotBy(Gender),",
+				"     {} = count(EmployeeID),",
+				"     columnNaming: '$N$V',",
+				"     lateral: true) ~> pivotonGender",
+				"UnpivotDatasource unpivot(output(",
+				"          Fruits as string,",
+				"          Quantity as string",
+				"     ),",
+				"     ungroupBy(Vendor),",
+				"     lateral: true,",
+				"     ignoreNullPivots: false) ~> unpivot1",
+				"employee window(over(DepartmentID),",
+				"     desc(Salary, true),",
+				"     DenseRank = denseRank(),",
+				"     partitionBy('key',",
+				"          0,",
+				"          DepartmentID",
+				"     )) ~> window1",
+				"window1 filter(DenseRank==1) ~> filterFisrtRankRecords",
+				"FinanaceEmpfile, finanaceEmployeetable lookup(FinanaceEmpfile@EmployeeID == finanaceEmployeetable@EmployeeID,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     partitionBy('hash', 1),",
+				"     broadcast: 'auto')~> lookupfornewrecords",
+				"UsernameAndFullnameComns, department join(employee@DepartmentID == department@DepartmentID,",
+				"     joinType:'outer',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join2",
+				"sortAgeBelow sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          EmployeeID,",
+				"          FirstName,",
+				"          LastName,",
+				"          Email,",
+				"          Age,",
+				"          Gender,",
+				"          UserName,",
+				"          FullName,",
+				"          DepartmentName,",
+				"          Location",
+				"     )) ~> sink1"
+			]
+		}
+	}
+}

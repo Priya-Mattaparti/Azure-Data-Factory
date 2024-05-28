@@ -1,0 +1,15 @@
+{
+	"name": "AzureKeyVault_ADF_ManagedUserIdentity",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "AzureKeyVault",
+		"typeProperties": {
+			"baseUrl": "https://ADFLinkSKeys.vault.azure.net/",
+			"credential": {
+				"referenceName": "credential_ADF_Managed_Id",
+				"type": "CredentialReference"
+			}
+		}
+	}
+}

@@ -1,0 +1,49 @@
+{
+	"name": "DfS3",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "pocDataLakeStoragegen2",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "Data2.csv",
+				"fileSystem": "files"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "Category",
+				"type": "String"
+			},
+			{
+				"name": "Apple",
+				"type": "String"
+			},
+			{
+				"name": "Beetroot",
+				"type": "String"
+			},
+			{
+				"name": "Carrot",
+				"type": "String"
+			},
+			{
+				"name": "Dates",
+				"type": "String"
+			},
+			{
+				"name": "Kiwi",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

@@ -1,0 +1,13 @@
+{
+	"name": "DBfolder",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "azsqldblink",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

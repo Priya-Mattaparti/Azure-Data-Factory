@@ -1,0 +1,56 @@
+{
+	"name": "DFJson",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "pocDataLakeStoragegen2",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "jdata.json",
+				"fileSystem": "files"
+			}
+		},
+		"schema": {
+			"type": "object",
+			"properties": {
+				"id": {
+					"type": "integer"
+				},
+				"employee_name": {
+					"type": "string"
+				},
+				"employee_salary": {
+					"type": "integer"
+				},
+				"employee_age": {
+					"type": "integer"
+				},
+				"skills": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					}
+				},
+				"contact": {
+					"type": "object",
+					"properties": {
+						"mobile": {
+							"type": "integer"
+						},
+						"mail": {
+							"type": "string"
+						}
+					}
+				},
+				"Address": {
+					"type": "string"
+				}
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

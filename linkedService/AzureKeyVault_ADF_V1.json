@@ -1,0 +1,12 @@
+{
+	"name": "AzureKeyVault_ADF_V1",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "AzureKeyVault",
+		"typeProperties": {
+			"baseUrl": "https://ADFLinkSKeys.vault.azure.net/"
+		},
+		"description": "Key vault created using system assigned managed identity"
+	}
+}

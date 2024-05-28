@@ -1,0 +1,61 @@
+{
+	"name": "dataflow_REQ",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "Emp_300",
+						"type": "DatasetReference"
+					},
+					"name": "Employee300Tablesource"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "Req_ParquetBlob",
+						"type": "DatasetReference"
+					},
+					"name": "BlobParqetsink"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     flname as string",
+				"}",
+				"source(output(",
+				"          Id as integer,",
+				"          Name as string,",
+				"          Age as integer,",
+				"          Department as string,",
+				"          Salary as integer,",
+				"          InsertedAt as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     inferDriftedColumnTypes: true,",
+				"     waterMarkColumn: 'Id',",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table',",
+				"     partitionBy('key',",
+				"          0,",
+				"          InsertedAt",
+				"     )) ~> Employee300Tablesource",
+				"Employee300Tablesource derive(Filename = concat($flname, toString(InsertedAt), '.parquet')) ~> derivedColumn1",
+				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'parquet',",
+				"     rowUrlColumn:'Filename',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> BlobParqetsink"
+			]
+		}
+	}
+}

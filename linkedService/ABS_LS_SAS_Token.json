@@ -1,0 +1,18 @@
+{
+	"name": "ABS_LS_SAS_Token",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "AzureBlobStorage",
+		"typeProperties": {
+			"sasUri": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "AzureKeyVault_Vault_access_policy",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "SAS-ABS-SAS-URI-Adfstorageaccount"
+			}
+		}
+	}
+}
