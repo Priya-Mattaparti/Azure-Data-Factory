@@ -36,10 +36,15 @@
 						}
 					},
 					"sink": {
-						"type": "AzureSqlSink",
-						"writeBehavior": "insert",
-						"sqlWriterUseTableLock": false,
-						"disableMetricsCollection": false
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
 					},
 					"enableStaging": false,
 					"translator": {
@@ -132,23 +137,12 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "Emp_300",
-						"type": "DatasetReference",
-						"parameters": {
-							"tablename": {
-								"value": "@pipeline().parameters.tbname",
-								"type": "Expression"
-							}
-						}
+						"referenceName": "DFfiles",
+						"type": "DatasetReference"
 					}
 				]
 			}
 		],
-		"parameters": {
-			"tbname": {
-				"type": "string"
-			}
-		},
 		"annotations": [],
 		"lastPublishTime": "2024-05-24T07:17:53Z"
 	},
