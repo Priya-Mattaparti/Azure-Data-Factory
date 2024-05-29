@@ -436,7 +436,7 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobFSLocation",
-						"folderPath": "DFoutput",
+						"folderPath": "SampleOutput",
 						"fileSystem": "files"
 					},
 					"columnDelimiter": ",",
