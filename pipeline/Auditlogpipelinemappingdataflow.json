@@ -259,7 +259,6 @@
 					{
 						"activity": "If Condition1",
 						"dependencyConditions": [
-							"Failed",
 							"Skipped"
 						]
 					}
