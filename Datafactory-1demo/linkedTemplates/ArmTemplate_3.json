@@ -947,7 +947,8 @@
 				"type": "WebTable",
 				"schema": [],
 				"typeProperties": {
-					"index": 0
+					"index": 0,
+					"path": "https://www.careerpower.in/states-and-capitals-of-india.html"
 				}
 			},
 			"dependsOn": []
