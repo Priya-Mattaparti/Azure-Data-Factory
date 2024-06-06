@@ -1,6 +1,5 @@
 {
 	"name": "WebConnector",
-	"type": "Microsoft.DataFactory/factories/linkedservices",
 	"properties": {
 		"annotations": [],
 		"type": "Web",
@@ -12,5 +11,6 @@
 			"referenceName": "onpremMysqlruntime",
 			"type": "IntegrationRuntimeReference"
 		}
-	}
+	},
+	"type": "Microsoft.DataFactory/factories/linkedservices"
 }
