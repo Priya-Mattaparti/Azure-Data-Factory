@@ -1,7 +1,0 @@
-{
-	"name": "AzureBlob",
-	"properties": {
-		"privateLinkResourceId": "/subscriptions/6053644e-c095-4d41-90ad-43797b9dfe90/resourceGroups/RDUAT/providers/Microsoft.Storage/storageAccounts/absuatblob",
-		"groupId": "blob"
-	}
-}
