@@ -89,7 +89,7 @@
 		},
 		"RestServicemp_properties_typeProperties_url": {
 			"type": "string",
-			"defaultValue": "\thttps://dummy.restapiexample.com/api/v1/employees"
+			"defaultValue": "https://api.escuelajs.co/api/v1/categories"
 		},
 		"SqlServer1_properties_typeProperties_server": {
 			"type": "string",
@@ -135,19 +135,9 @@
 			"type": "string",
 			"defaultValue": "04/22/2024, 12:15:00 AM "
 		},
-		"EndpointABSVNIR_properties_privateLinkResourceId": {
+		"RestServiceCart_properties_typeProperties_url": {
 			"type": "string",
-			"defaultValue": "/subscriptions/6053644e-c095-4d41-90ad-43797b9dfe90/resourceGroups/darafactoryseries/providers/Microsoft.Storage/storageAccounts/adfstrorageaccounts"
-		},
-		"EndpointABSVNIR_properties_groupId": {
-			"type": "string",
-			"defaultValue": "blob"
-		},
-		"EndpointABSVNIR_properties_fqdns": {
-			"type": "array",
-			"defaultValue": [
-				"adfstrorageaccounts.blob.core.windows.net"
-			]
+			"defaultValue": "https://dummyjson.com/"
 		}
 	},
 	"variables": {
@@ -1083,7 +1073,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/DFdemoCPYpipeline')]",
+			"name": "[concat(parameters('factoryName'), '/DFschemademoCPYpipeline')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -4574,7 +4564,7 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobFSLocation",
-						"fileName": "data.csv",
+						"fileName": "EMP.csv",
 						"fileSystem": "files"
 					},
 					"columnDelimiter": ",",
@@ -5033,7 +5023,6 @@
 					"database": "[parameters('SqlServer1_properties_typeProperties_database')]",
 					"encrypt": "optional",
 					"trustServerCertificate": false,
-					"hostNameInCertificate": "",
 					"authenticationType": "SQL",
 					"userName": "[parameters('SqlServer1_properties_typeProperties_userName')]",
 					"password": {
@@ -5251,6 +5240,7 @@
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"type": "Managed",
+				"description": "Managed virtual network with Azure IR",
 				"typeProperties": {
 					"computeProperties": {
 						"location": "South India",
@@ -5263,7 +5253,7 @@
 						},
 						"copyComputeScaleProperties": {
 							"dataIntegrationUnit": 16,
-							"timeToLive": 5
+							"timeToLive": 10
 						},
 						"pipelineExternalComputeScaleProperties": {
 							"timeToLive": 10,
@@ -6219,17 +6209,202 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/default/EndpointABSVNIR')]",
-			"type": "Microsoft.DataFactory/factories/managedVirtualNetworks/managedPrivateEndpoints",
+			"name": "[concat(parameters('factoryName'), '/fetch data from APIpipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"privateLinkResourceId": "[parameters('EndpointABSVNIR_properties_privateLinkResourceId')]",
-				"groupId": "[parameters('EndpointABSVNIR_properties_groupId')]",
-				"fqdns": "[parameters('EndpointABSVNIR_properties_fqdns')]"
+				"activities": [
+					{
+						"name": "ForEach1",
+						"type": "ForEach",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@pipeline().parameters.Links",
+								"type": "Expression"
+							},
+							"isSequential": false,
+							"activities": [
+								{
+									"name": "CopyFromAPI2Blob",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "RestSource",
+											"httpRequestTimeout": "00:01:40",
+											"requestInterval": "00.00:00:00.010",
+											"requestMethod": "GET",
+											"paginationRules": {
+												"supportRFC5988": "true"
+											}
+										},
+										"sink": {
+											"type": "DelimitedTextSink",
+											"storeSettings": {
+												"type": "AzureBlobStorageWriteSettings"
+											},
+											"formatSettings": {
+												"type": "DelimitedTextWriteSettings",
+												"quoteAllText": true,
+												"fileExtension": ".txt"
+											}
+										},
+										"enableStaging": false
+									},
+									"inputs": [
+										{
+											"referenceName": "RestResourcecart",
+											"type": "DatasetReference",
+											"parameters": {
+												"item": {
+													"value": "@item()",
+													"type": "Expression"
+												}
+											}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "webactoutputdes",
+											"type": "DatasetReference",
+											"parameters": {
+												"filename": {
+													"value": "@concat(item(),'.csv')",
+													"type": "Expression"
+												}
+											}
+										}
+									]
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"Links": {
+						"type": "array",
+						"defaultValue": [
+							"products",
+							"users"
+						]
+					}
+				},
+				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/managedVirtualNetworks/default')]"
+				"[concat(variables('factoryId'), '/datasets/RestResourcecart')]",
+				"[concat(variables('factoryId'), '/datasets/webactoutputdes')]"
 			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/webactoutputdes')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "pocblobstorage",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"filename": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "@dataset().filename",
+							"type": "Expression"
+						},
+						"container": "webactivityoutput"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/pocblobstorage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/RestServiceCart')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Fake Store API cart",
+				"annotations": [],
+				"type": "RestService",
+				"typeProperties": {
+					"url": "[parameters('RestServiceCart_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": true,
+					"authenticationType": "Anonymous"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/RestResourcecart')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "RestServiceCart",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"item": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "RestResource",
+				"typeProperties": {
+					"relativeUrl": {
+						"value": "@dataset().item",
+						"type": "Expression"
+					}
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/RestServiceCart')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dataflow1')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [],
+					"sinks": [],
+					"transformations": [],
+					"scriptLines": [
+						""
+					]
+				}
+			},
+			"dependsOn": []
 		}
 	]
 }

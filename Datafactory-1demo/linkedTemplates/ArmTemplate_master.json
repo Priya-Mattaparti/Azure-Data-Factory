@@ -89,7 +89,7 @@
 		},
 		"RestServicemp_properties_typeProperties_url": {
 			"type": "string",
-			"defaultValue": "\thttps://dummy.restapiexample.com/api/v1/employees"
+			"defaultValue": "https://api.escuelajs.co/api/v1/categories"
 		},
 		"SqlServer1_properties_typeProperties_server": {
 			"type": "string",
@@ -135,19 +135,9 @@
 			"type": "string",
 			"defaultValue": "04/22/2024, 12:15:00 AM "
 		},
-		"EndpointABSVNIR_properties_privateLinkResourceId": {
+		"RestServiceCart_properties_typeProperties_url": {
 			"type": "string",
-			"defaultValue": "/subscriptions/6053644e-c095-4d41-90ad-43797b9dfe90/resourceGroups/darafactoryseries/providers/Microsoft.Storage/storageAccounts/adfstrorageaccounts"
-		},
-		"EndpointABSVNIR_properties_groupId": {
-			"type": "string",
-			"defaultValue": "blob"
-		},
-		"EndpointABSVNIR_properties_fqdns": {
-			"type": "array",
-			"defaultValue": [
-				"adfstrorageaccounts.blob.core.windows.net"
-			]
+			"defaultValue": "https://dummyjson.com/"
 		},
 		"containerUri": {
 			"type": "string",
@@ -214,6 +204,9 @@
 					},
 					"pocDataLakeStoragegen2_properties_typeProperties_url": {
 						"value": "[parameters('pocDataLakeStoragegen2_properties_typeProperties_url')]"
+					},
+					"RestServiceCart_properties_typeProperties_url": {
+						"value": "[parameters('RestServiceCart_properties_typeProperties_url')]"
 					}
 				}
 			},
@@ -288,15 +281,6 @@
 					},
 					"WebConnector_properties_typeProperties_url": {
 						"value": "[parameters('WebConnector_properties_typeProperties_url')]"
-					},
-					"EndpointABSVNIR_properties_privateLinkResourceId": {
-						"value": "[parameters('EndpointABSVNIR_properties_privateLinkResourceId')]"
-					},
-					"EndpointABSVNIR_properties_groupId": {
-						"value": "[parameters('EndpointABSVNIR_properties_groupId')]"
-					},
-					"EndpointABSVNIR_properties_fqdns": {
-						"value": "[parameters('EndpointABSVNIR_properties_fqdns')]"
 					}
 				}
 			},

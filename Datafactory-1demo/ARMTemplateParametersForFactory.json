@@ -66,7 +66,7 @@
 			"value": "@{linkedService().url_storage}"
 		},
 		"RestServicemp_properties_typeProperties_url": {
-			"value": "\thttps://dummy.restapiexample.com/api/v1/employees"
+			"value": "https://api.escuelajs.co/api/v1/categories"
 		},
 		"SqlServer1_properties_typeProperties_server": {
 			"value": "sqladfdbserver"
@@ -101,16 +101,8 @@
 		"trigger_ms_properties_pipeline_parameters_windowEnd": {
 			"value": "04/22/2024, 12:15:00 AM "
 		},
-		"EndpointABSVNIR_properties_privateLinkResourceId": {
-			"value": "/subscriptions/6053644e-c095-4d41-90ad-43797b9dfe90/resourceGroups/darafactoryseries/providers/Microsoft.Storage/storageAccounts/adfstrorageaccounts"
-		},
-		"EndpointABSVNIR_properties_groupId": {
-			"value": "blob"
-		},
-		"EndpointABSVNIR_properties_fqdns": {
-			"value": [
-				"adfstrorageaccounts.blob.core.windows.net"
-			]
+		"RestServiceCart_properties_typeProperties_url": {
+			"value": "https://dummyjson.com/"
 		}
 	}
 }
