@@ -33,7 +33,7 @@
 									"requestInterval": "00.00:00:00.010",
 									"requestMethod": "GET",
 									"paginationRules": {
-										"supportRFC5988": "true"
+										"AbsoluteUrl": "$.info.next"
 									}
 								},
 								"sink": {
@@ -47,18 +47,135 @@
 										"fileExtension": ".txt"
 									}
 								},
-								"enableStaging": false
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"mappings": [
+										{
+											"source": {
+												"path": "['id']"
+											},
+											"sink": {
+												"name": "id",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "['name']"
+											},
+											"sink": {
+												"name": "name",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "['status']"
+											},
+											"sink": {
+												"name": "status",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "['species']"
+											},
+											"sink": {
+												"name": "species",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "['type']"
+											},
+											"sink": {
+												"name": "type",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "['gender']"
+											},
+											"sink": {
+												"name": "gender",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "['origin']['name']"
+											},
+											"sink": {
+												"name": "origin_name",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "['origin']['url']"
+											},
+											"sink": {
+												"name": "origin_url",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "['location']['name']"
+											},
+											"sink": {
+												"name": "location_name",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "['location']['url']"
+											},
+											"sink": {
+												"name": "location_url",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "['image']"
+											},
+											"sink": {
+												"name": "image",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "['url']"
+											},
+											"sink": {
+												"name": "character_url",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "['created']"
+											},
+											"sink": {
+												"name": "created",
+												"type": "String"
+											}
+										}
+									],
+									"collectionReference": "$['results']"
+								}
 							},
 							"inputs": [
 								{
-									"referenceName": "RestResourcecart",
-									"type": "DatasetReference",
-									"parameters": {
-										"item": {
-											"value": "@item()",
-											"type": "Expression"
-										}
-									}
+									"referenceName": "RestResourceRickyandMorty",
+									"type": "DatasetReference"
 								}
 							],
 							"outputs": [
@@ -82,8 +199,8 @@
 			"Links": {
 				"type": "array",
 				"defaultValue": [
-					"products",
-					"users"
+					"characters",
+					"locations"
 				]
 			}
 		},

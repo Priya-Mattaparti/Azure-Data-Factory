@@ -1,0 +1,23 @@
+{
+	"name": "kZfile",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "pocblobstorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "kz.csv",
+				"container": "adfcondemo"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}
