@@ -1,0 +1,13 @@
+{
+	"name": "RestServiceCart",
+	"properties": {
+		"description": "Fake Store API cart",
+		"annotations": [],
+		"type": "RestService",
+		"typeProperties": {
+			"url": "https://api.escuelajs.co/api/v1/",
+			"enableServerCertificateValidation": true,
+			"authenticationType": "Anonymous"
+		}
+	}
+}
