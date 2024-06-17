@@ -174,8 +174,14 @@
 							},
 							"inputs": [
 								{
-									"referenceName": "RestResourceRickyandMorty",
-									"type": "DatasetReference"
+									"referenceName": "RestResourcecart",
+									"type": "DatasetReference",
+									"parameters": {
+										"item": {
+											"value": "@item()",
+											"type": "Expression"
+										}
+									}
 								}
 							],
 							"outputs": [
@@ -199,8 +205,8 @@
 			"Links": {
 				"type": "array",
 				"defaultValue": [
-					"characters",
-					"locations"
+					"users",
+					"products"
 				]
 			}
 		},
