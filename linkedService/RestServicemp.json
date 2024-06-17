@@ -1,13 +1,13 @@
 {
 	"name": "RestServicemp",
-	"type": "Microsoft.DataFactory/factories/linkedservices",
 	"properties": {
 		"annotations": [],
 		"type": "RestService",
 		"typeProperties": {
-			"url": "\thttps://dummy.restapiexample.com/api/v1/employees",
+			"url": "https://api.escuelajs.co/api/v1/categories",
 			"enableServerCertificateValidation": true,
 			"authenticationType": "Anonymous"
 		}
-	}
+	},
+	"type": "Microsoft.DataFactory/factories/linkedservices"
 }
