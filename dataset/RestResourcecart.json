@@ -1,0 +1,23 @@
+{
+	"name": "RestResourcecart",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "RestServiceCart",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"item": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"typeProperties": {
+			"relativeUrl": {
+				"value": "@dataset().item",
+				"type": "Expression"
+			}
+		},
+		"schema": []
+	}
+}
