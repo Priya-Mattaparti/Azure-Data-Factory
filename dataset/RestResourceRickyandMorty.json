@@ -1,0 +1,12 @@
+{
+	"name": "RestResourceRickyandMorty",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "RestServiceRickandMortyAPI",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"schema": []
+	}
+}
