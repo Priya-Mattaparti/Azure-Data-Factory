@@ -1,0 +1,13 @@
+{
+	"name": "RestServiceRickandMortyAPI",
+	"properties": {
+		"description": "rickandmortyapi.com",
+		"annotations": [],
+		"type": "RestService",
+		"typeProperties": {
+			"url": "https://rickandmortyapi.com/api/character",
+			"enableServerCertificateValidation": true,
+			"authenticationType": "Anonymous"
+		}
+	}
+}
