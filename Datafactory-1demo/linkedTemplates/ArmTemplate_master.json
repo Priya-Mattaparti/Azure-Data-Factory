@@ -139,6 +139,10 @@
 			"type": "string",
 			"defaultValue": "https://dummyjson.com/"
 		},
+		"RestServiceRickandMortyAPI_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://rickandmortyapi.com/api/location"
+		},
 		"containerUri": {
 			"type": "string",
 			"metadata": "URI to storage account containing linked ARM templates"
@@ -207,6 +211,9 @@
 					},
 					"RestServiceCart_properties_typeProperties_url": {
 						"value": "[parameters('RestServiceCart_properties_typeProperties_url')]"
+					},
+					"RestServiceRickandMortyAPI_properties_typeProperties_url": {
+						"value": "[parameters('RestServiceRickandMortyAPI_properties_typeProperties_url')]"
 					}
 				}
 			},

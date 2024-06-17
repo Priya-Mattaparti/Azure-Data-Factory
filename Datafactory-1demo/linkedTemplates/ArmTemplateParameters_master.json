@@ -104,6 +104,9 @@
 		"RestServiceCart_properties_typeProperties_url": {
 			"value": "https://dummyjson.com/"
 		},
+		"RestServiceRickandMortyAPI_properties_typeProperties_url": {
+			"value": "https://rickandmortyapi.com/api/location"
+		},
 		"containerUri": {
 			"value": ""
 		},

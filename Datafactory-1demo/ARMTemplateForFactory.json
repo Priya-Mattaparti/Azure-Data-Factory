@@ -138,6 +138,10 @@
 		"RestServiceCart_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://dummyjson.com/"
+		},
+		"RestServiceRickandMortyAPI_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://rickandmortyapi.com/api/location"
 		}
 	},
 	"variables": {
@@ -6245,7 +6249,7 @@
 											"requestInterval": "00.00:00:00.010",
 											"requestMethod": "GET",
 											"paginationRules": {
-												"supportRFC5988": "true"
+												"AbsoluteUrl": "$.info.next"
 											}
 										},
 										"sink": {
@@ -6259,7 +6263,130 @@
 												"fileExtension": ".txt"
 											}
 										},
-										"enableStaging": false
+										"enableStaging": false,
+										"translator": {
+											"type": "TabularTranslator",
+											"mappings": [
+												{
+													"source": {
+														"path": "[['id']"
+													},
+													"sink": {
+														"name": "id",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['name']"
+													},
+													"sink": {
+														"name": "name",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['status']"
+													},
+													"sink": {
+														"name": "status",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['species']"
+													},
+													"sink": {
+														"name": "species",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['type']"
+													},
+													"sink": {
+														"name": "type",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['gender']"
+													},
+													"sink": {
+														"name": "gender",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['origin']['name']"
+													},
+													"sink": {
+														"name": "origin_name",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['origin']['url']"
+													},
+													"sink": {
+														"name": "origin_url",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['location']['name']"
+													},
+													"sink": {
+														"name": "location_name",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['location']['url']"
+													},
+													"sink": {
+														"name": "location_url",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['image']"
+													},
+													"sink": {
+														"name": "image",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['url']"
+													},
+													"sink": {
+														"name": "character_url",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['created']"
+													},
+													"sink": {
+														"name": "created",
+														"type": "String"
+													}
+												}
+											],
+											"collectionReference": "$['results']"
+										}
 									},
 									"inputs": [
 										{
@@ -6297,8 +6424,8 @@
 					"Links": {
 						"type": "array",
 						"defaultValue": [
-							"products",
-							"users"
+							"users",
+							"products"
 						]
 					}
 				},
@@ -6390,21 +6517,334 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/dataflow1')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
+			"name": "[concat(parameters('factoryName'), '/kZfile')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"type": "MappingDataFlow",
+				"linkedServiceName": {
+					"referenceName": "pocblobstorage",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
 				"typeProperties": {
-					"sources": [],
-					"sinks": [],
-					"transformations": [],
-					"scriptLines": [
-						""
-					]
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "kz.csv",
+						"container": "adfcondemo"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/pocblobstorage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pagnation_pipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "RestSource",
+								"httpRequestTimeout": "00:01:40",
+								"requestInterval": "00.00:00:00.010",
+								"requestMethod": "GET",
+								"paginationRules": {
+									"AbsoluteUrl": "$.info.next"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"path": "[['id']"
+										},
+										"sink": {
+											"name": "id",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "[['name']"
+										},
+										"sink": {
+											"name": "name"
+										}
+									},
+									{
+										"source": {
+											"path": "[['type']"
+										},
+										"sink": {
+											"name": "type"
+										}
+									},
+									{
+										"source": {
+											"path": "[['dimension']"
+										},
+										"sink": {
+											"name": "dimension"
+										}
+									},
+									{
+										"source": {
+											"path": "[['url']"
+										},
+										"sink": {
+											"name": "url"
+										}
+									},
+									{
+										"source": {
+											"path": "[['created']"
+										},
+										"sink": {
+											"name": "created"
+										}
+									}
+								],
+								"collectionReference": "$['results']",
+								"mapComplexValuesToString": false
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "RestResourceRickyandMorty",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "webactoutputdes",
+								"type": "DatasetReference",
+								"parameters": {
+									"filename": "locations.csv"
+								}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/RestResourceRickyandMorty')]",
+				"[concat(variables('factoryId'), '/datasets/webactoutputdes')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/RestServiceRickandMortyAPI')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "rickandmortyapi.com",
+				"annotations": [],
+				"type": "RestService",
+				"typeProperties": {
+					"url": "[parameters('RestServiceRickandMortyAPI_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": true,
+					"authenticationType": "Anonymous"
 				}
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/RestResourceRickyandMorty')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "RestServiceRickandMortyAPI",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "RestResource",
+				"typeProperties": {},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/RestServiceRickandMortyAPI')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/RestResourceRickyandMorty')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "RestServiceRickandMortyAPI",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "RestResource",
+				"typeProperties": {},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/RestServiceRickandMortyAPI')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pagnation_pipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "RestSource",
+								"httpRequestTimeout": "00:01:40",
+								"requestInterval": "00.00:00:00.010",
+								"requestMethod": "GET",
+								"paginationRules": {
+									"AbsoluteUrl": "$.info.next"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"path": "[['id']"
+										},
+										"sink": {
+											"name": "id",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "[['name']"
+										},
+										"sink": {
+											"name": "name"
+										}
+									},
+									{
+										"source": {
+											"path": "[['type']"
+										},
+										"sink": {
+											"name": "type"
+										}
+									},
+									{
+										"source": {
+											"path": "[['dimension']"
+										},
+										"sink": {
+											"name": "dimension"
+										}
+									},
+									{
+										"source": {
+											"path": "[['url']"
+										},
+										"sink": {
+											"name": "url"
+										}
+									},
+									{
+										"source": {
+											"path": "[['created']"
+										},
+										"sink": {
+											"name": "created"
+										}
+									}
+								],
+								"collectionReference": "$['results']",
+								"mapComplexValuesToString": false
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "RestResourceRickyandMorty",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "webactoutputdes",
+								"type": "DatasetReference",
+								"parameters": {
+									"filename": "locations.csv"
+								}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/RestResourceRickyandMorty')]",
+				"[concat(variables('factoryId'), '/datasets/webactoutputdes')]"
+			]
 		}
 	]
 }
