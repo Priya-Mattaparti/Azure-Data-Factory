@@ -1,5 +1,5 @@
 {
-	"name": "loaddataflow_sql",
+	"name": "silver_loaddataflow_sql",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
