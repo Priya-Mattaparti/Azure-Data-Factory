@@ -2,11 +2,22 @@
 	"name": "RestResourceRickyandMorty",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "RestServiceRickandMortyAPI",
+			"referenceName": "RickandmontyBaseURLRestService",
 			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"url": {
+				"type": "string"
+			}
 		},
 		"annotations": [],
 		"type": "RestResource",
+		"typeProperties": {
+			"relativeUrl": {
+				"value": "@dataset().url",
+				"type": "Expression"
+			}
+		},
 		"schema": []
 	}
 }
