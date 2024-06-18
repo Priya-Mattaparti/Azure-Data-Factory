@@ -5,7 +5,7 @@
 		"annotations": [],
 		"type": "RestService",
 		"typeProperties": {
-			"url": "https://rickandmortyapi.com/api/location",
+			"url": "https://rickandmortyapi.com/api/",
 			"enableServerCertificateValidation": true,
 			"authenticationType": "Anonymous"
 		}
