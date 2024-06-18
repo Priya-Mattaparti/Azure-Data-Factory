@@ -1,0 +1,29 @@
+{
+	"name": "dataflow_silver_jsonSRC",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "Json_Characters_SRC",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [],
+			"transformations": [],
+			"scriptLines": [
+				"source(output(",
+				"          info as (count as short, next as string, pages as short, prev as string),",
+				"          results as (created as string, episode as string[], gender as string, id as short, image as string, location as (name as string, url as string), name as string, origin as (name as string, url as string), species as string, status as string, type as string, url as string)[]",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     documentForm: 'arrayOfDocuments') ~> source1"
+			]
+		}
+	}
+}
