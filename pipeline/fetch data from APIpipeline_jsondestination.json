@@ -55,8 +55,7 @@
 												"path": "['id']"
 											},
 											"sink": {
-												"name": "id",
-												"type": "String"
+												"path": "id"
 											}
 										},
 										{
@@ -64,8 +63,7 @@
 												"path": "['name']"
 											},
 											"sink": {
-												"name": "name",
-												"type": "String"
+												"path": "name"
 											}
 										},
 										{
@@ -73,8 +71,7 @@
 												"path": "['status']"
 											},
 											"sink": {
-												"name": "status",
-												"type": "String"
+												"path": "status"
 											}
 										},
 										{
@@ -82,8 +79,7 @@
 												"path": "['species']"
 											},
 											"sink": {
-												"name": "species",
-												"type": "String"
+												"path": "species"
 											}
 										},
 										{
@@ -91,8 +87,7 @@
 												"path": "['type']"
 											},
 											"sink": {
-												"name": "type",
-												"type": "String"
+												"path": "type"
 											}
 										},
 										{
@@ -100,8 +95,7 @@
 												"path": "['gender']"
 											},
 											"sink": {
-												"name": "gender",
-												"type": "String"
+												"path": "gender"
 											}
 										},
 										{
@@ -109,8 +103,7 @@
 												"path": "['origin']['name']"
 											},
 											"sink": {
-												"name": "origin_name",
-												"type": "String"
+												"path": "origin_name"
 											}
 										},
 										{
@@ -118,8 +111,7 @@
 												"path": "['origin']['url']"
 											},
 											"sink": {
-												"name": "origin_url",
-												"type": "String"
+												"path": "origin_url"
 											}
 										},
 										{
@@ -127,8 +119,7 @@
 												"path": "['location']['name']"
 											},
 											"sink": {
-												"name": "location_name",
-												"type": "String"
+												"path": "location_name"
 											}
 										},
 										{
@@ -136,8 +127,7 @@
 												"path": "['location']['url']"
 											},
 											"sink": {
-												"name": "location_url",
-												"type": "String"
+												"path": "location_url"
 											}
 										},
 										{
@@ -145,8 +135,31 @@
 												"path": "['image']"
 											},
 											"sink": {
-												"name": "image",
-												"type": "String"
+												"path": "image_url"
+											}
+										},
+										{
+											"source": {
+												"path": "['dimension']"
+											},
+											"sink": {
+												"path": "dimension"
+											}
+										},
+										{
+											"source": {
+												"path": "['residents']"
+											},
+											"sink": {
+												"path": "residents"
+											}
+										},
+										{
+											"source": {
+												"path": "['episode']"
+											},
+											"sink": {
+												"path": "episode"
 											}
 										},
 										{
@@ -154,8 +167,7 @@
 												"path": "['url']"
 											},
 											"sink": {
-												"name": "url",
-												"type": "String"
+												"path": "url"
 											}
 										},
 										{
@@ -163,35 +175,7 @@
 												"path": "['created']"
 											},
 											"sink": {
-												"name": "created",
-												"type": "String"
-											}
-										},
-										{
-											"source": {
-												"path": "$['dimension']"
-											},
-											"sink": {
-												"name": "dimension",
-												"type": "String"
-											}
-										},
-										{
-											"source": {
-												"path": "$['episode']"
-											},
-											"sink": {
-												"name": "episode",
-												"type": "String"
-											}
-										},
-										{
-											"source": {
-												"path": "$['residents']"
-											},
-											"sink": {
-												"name": "residents",
-												"type": "String"
+												"path": "created"
 											}
 										}
 									],

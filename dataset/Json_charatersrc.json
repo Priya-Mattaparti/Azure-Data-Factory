@@ -1,27 +1,18 @@
 {
-	"name": "Json_weboutputDes",
+	"name": "Json_charatersrc",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "pocblobstorage",
 			"type": "LinkedServiceReference"
-		},
-		"parameters": {
-			"name": {
-				"type": "string"
-			}
 		},
 		"annotations": [],
 		"type": "Json",
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": {
-					"value": "@dataset().name",
-					"type": "Expression"
-				},
+				"fileName": "characters.json",
 				"container": "webactivityoutput"
-			},
-			"encodingName": "UTF-8 without BOM"
+			}
 		},
 		"schema": {}
 	}
