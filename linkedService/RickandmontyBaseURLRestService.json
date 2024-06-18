@@ -1,0 +1,13 @@
+{
+	"name": "RickandmontyBaseURLRestService",
+	"properties": {
+		"description": "RickandMonty abse APi https://rickandmortyapi.com/api/",
+		"annotations": [],
+		"type": "RestService",
+		"typeProperties": {
+			"url": "https://rickandmortyapi.com/api/",
+			"enableServerCertificateValidation": true,
+			"authenticationType": "Anonymous"
+		}
+	}
+}
