@@ -212,7 +212,7 @@
 							"userProperties": [],
 							"typeProperties": {
 								"dataflow": {
-									"referenceName": "dataflow_silver_jsonSRC",
+									"referenceName": "loaddataflow_sql",
 									"type": "DataFlowReference",
 									"datasetParameters": {
 										"source1": {
