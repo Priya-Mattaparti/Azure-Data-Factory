@@ -1,0 +1,23 @@
+{
+	"name": "character_source",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "pocblobstorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "characters.csv",
+				"container": "webactivityoutput"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}

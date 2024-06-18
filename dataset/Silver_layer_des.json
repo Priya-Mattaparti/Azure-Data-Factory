@@ -1,0 +1,16 @@
+{
+	"name": "Silver_layer_des",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "azsqldblink",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "characters"
+		}
+	}
+}
