@@ -12,17 +12,86 @@
 					"name": "source1"
 				}
 			],
-			"sinks": [],
-			"transformations": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "Silver_layer_des",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "select1"
+				}
+			],
 			"scriptLines": [
 				"source(output(",
-				"          info as (count as short, next as string, pages as short, prev as string),",
-				"          results as (created as string, episode as string[], gender as string, id as short, image as string, location as (name as string, url as string), name as string, origin as (name as string, url as string), species as string, status as string, type as string, url as string)[]",
+				"          created as string,",
+				"          gender as string,",
+				"          id as integer,",
+				"          image_url as string,",
+				"          location_name as string,",
+				"          location_url as string,",
+				"          name as string,",
+				"          origin_name as string,",
+				"          origin_url as string,",
+				"          species as string,",
+				"          status as string,",
+				"          type as string,",
+				"          url as string",
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     inferDriftedColumnTypes: true,",
 				"     ignoreNoFilesFound: false,",
-				"     documentForm: 'arrayOfDocuments') ~> source1"
+				"     documentForm: 'arrayOfDocuments',",
+				"     preferredIntegralType: 'integer') ~> source1",
+				"source1 derive(id = id,",
+				"          name = name,",
+				"          status = status,",
+				"          species = species,",
+				"          type = type,",
+				"          gender = gender,",
+				"          origin_name = origin_name,",
+				"          origin_url = origin_url,",
+				"          location_name = location_name,",
+				"          location_url = location_url,",
+				"          image_url = image_url,",
+				"          url = url,",
+				"          created = toTimestamp(created, \"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'\",'UTC')) ~> derivedColumn1",
+				"derivedColumn1 select(mapColumn(",
+				"          id,",
+				"          name,",
+				"          status,",
+				"          species,",
+				"          type,",
+				"          gender,",
+				"          origin_name,",
+				"          origin_url,",
+				"          location_name,",
+				"          location_url,",
+				"          image_url,",
+				"          url,",
+				"          created",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     truncate:true,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> sink1"
 			]
 		}
 	}

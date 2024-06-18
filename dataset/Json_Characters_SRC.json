@@ -5,12 +5,20 @@
 			"referenceName": "pocblobstorage",
 			"type": "LinkedServiceReference"
 		},
+		"parameters": {
+			"fname": {
+				"type": "string"
+			}
+		},
 		"annotations": [],
 		"type": "Json",
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": "characters.json",
+				"fileName": {
+					"value": "@dataset().fname",
+					"type": "Expression"
+				},
 				"container": "webactivityoutput"
 			}
 		},
