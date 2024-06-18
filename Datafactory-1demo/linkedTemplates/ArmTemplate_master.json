@@ -262,15 +262,6 @@
 					},
 					"ABS_LS_SAS_Token_properties_typeProperties_sasUri_secretName": {
 						"value": "[parameters('ABS_LS_SAS_Token_properties_typeProperties_sasUri_secretName')]"
-					},
-					"AzureDataLakeStorage_SPA_properties_typeProperties_url": {
-						"value": "[parameters('AzureDataLakeStorage_SPA_properties_typeProperties_url')]"
-					},
-					"AzureDataLakeStorage_SPA_properties_typeProperties_tenant": {
-						"value": "[parameters('AzureDataLakeStorage_SPA_properties_typeProperties_tenant')]"
-					},
-					"AzureDataLakeStorage_SPA_properties_typeProperties_servicePrincipalId": {
-						"value": "[parameters('AzureDataLakeStorage_SPA_properties_typeProperties_servicePrincipalId')]"
 					}
 				}
 			},
@@ -294,6 +285,15 @@
 					},
 					"FileServer1_password": {
 						"value": "[parameters('FileServer1_password')]"
+					},
+					"AzureDataLakeStorage_SPA_properties_typeProperties_url": {
+						"value": "[parameters('AzureDataLakeStorage_SPA_properties_typeProperties_url')]"
+					},
+					"AzureDataLakeStorage_SPA_properties_typeProperties_tenant": {
+						"value": "[parameters('AzureDataLakeStorage_SPA_properties_typeProperties_tenant')]"
+					},
+					"AzureDataLakeStorage_SPA_properties_typeProperties_servicePrincipalId": {
+						"value": "[parameters('AzureDataLakeStorage_SPA_properties_typeProperties_servicePrincipalId')]"
 					},
 					"AzureKeyVault_ADF_ManagedUserIdentity_properties_typeProperties_baseUrl": {
 						"value": "[parameters('AzureKeyVault_ADF_ManagedUserIdentity_properties_typeProperties_baseUrl')]"

@@ -10,24 +10,38 @@
 		"ABS_LS_SAS_Token_properties_typeProperties_sasUri_secretName": {
 			"type": "string",
 			"defaultValue": "SAS-ABS-SAS-URI-Adfstorageaccount"
-		},
-		"AzureDataLakeStorage_SPA_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "https://adfgen2account.dfs.core.windows.net/"
-		},
-		"AzureDataLakeStorage_SPA_properties_typeProperties_tenant": {
-			"type": "string",
-			"defaultValue": "ced0eae1-0a0e-4ee4-9718-ca543d33fcb2"
-		},
-		"AzureDataLakeStorage_SPA_properties_typeProperties_servicePrincipalId": {
-			"type": "string",
-			"defaultValue": "e75b636f6d3c4114b8718cda29438ad8"
 		}
 	},
 	"variables": {
 		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
 	},
 	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/RestResourcecart')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "RestServiceCart",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"item": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "RestResource",
+				"typeProperties": {
+					"relativeUrl": {
+						"value": "@dataset().item",
+						"type": "Expression"
+					}
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
 		{
 			"name": "[concat(parameters('factoryName'), '/Silver_layer_des')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
@@ -637,30 +651,6 @@
 							"type": "LinkedServiceReference"
 						},
 						"secretName": "[parameters('ABS_LS_SAS_Token_properties_typeProperties_sasUri_secretName')]"
-					}
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/AzureDataLakeStorage_SPA')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureBlobFS",
-				"typeProperties": {
-					"url": "[parameters('AzureDataLakeStorage_SPA_properties_typeProperties_url')]",
-					"tenant": "[parameters('AzureDataLakeStorage_SPA_properties_typeProperties_tenant')]",
-					"servicePrincipalId": "[parameters('AzureDataLakeStorage_SPA_properties_typeProperties_servicePrincipalId')]",
-					"servicePrincipalCredentialType": "ServicePrincipalKey",
-					"servicePrincipalCredential": {
-						"type": "AzureKeyVaultSecret",
-						"store": {
-							"referenceName": "AzureKeyVault_ADF_V1",
-							"type": "LinkedServiceReference"
-						},
-						"secretName": "ADLSGen2-storage-ADF"
 					}
 				}
 			},

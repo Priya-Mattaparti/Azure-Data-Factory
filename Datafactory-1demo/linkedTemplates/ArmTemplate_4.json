@@ -1111,7 +1111,7 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/silverlayer_dataflowtransformation')]",
+			"name": "[concat(parameters('factoryName'), '/silver_loaddataflow_sql')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -1120,7 +1120,7 @@
 					"sources": [
 						{
 							"dataset": {
-								"referenceName": "character_source",
+								"referenceName": "Json_Characters_SRC",
 								"type": "DatasetReference"
 							},
 							"name": "source1"
@@ -1138,58 +1138,30 @@
 					"transformations": [
 						{
 							"name": "derivedColumn1"
-						},
-						{
-							"name": "select1"
 						}
 					],
 					"scriptLines": [
 						"source(output(",
-						"          id as integer,",
+						"          created as string,",
+						"          dimension as string,",
+						"          id as short,",
 						"          name as string,",
-						"          status as string,",
-						"          species as string,",
 						"          type as string,",
-						"          gender as string,",
-						"          origin_name as string,",
-						"          origin_url as string,",
-						"          location_name as string,",
-						"          location_url as string,",
-						"          image as string,",
-						"          character_url as string,",
-						"          created as string",
+						"          url as string",
 						"     ),",
 						"     allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     inferDriftedColumnTypes: true,",
 						"     ignoreNoFilesFound: false,",
-						"     timestampFormats: ['yyyy.MM.dd HH:mm:ss'],",
-						"     preferredIntegralType: 'integer') ~> source1",
+						"     documentForm: 'arrayOfDocuments') ~> source1",
 						"source1 derive(created = toTimestamp(created, \"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'\",'UTC')) ~> derivedColumn1",
-						"derivedColumn1 select(mapColumn(",
-						"          id,",
-						"          name,",
-						"          status,",
-						"          species,",
-						"          type,",
-						"          gender,",
-						"          origin_name,",
-						"          origin_url,",
-						"          location_name,",
-						"          location_url,",
-						"          image,",
-						"          character_url,",
-						"          created",
-						"     ),",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> select1",
-						"select1 sink(allowSchemaDrift: true,",
+						"derivedColumn1 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     deletable:false,",
 						"     insertable:true,",
 						"     updateable:false,",
 						"     upsertable:false,",
-						"     recreate:true,",
+						"     truncate:true,",
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
@@ -1929,7 +1901,7 @@
 									"userProperties": [],
 									"typeProperties": {
 										"dataflow": {
-											"referenceName": "dataflow_silver_jsonSRC",
+											"referenceName": "silver_loaddataflow_sql",
 											"type": "DataFlowReference",
 											"parameters": {},
 											"datasetParameters": {
@@ -1945,8 +1917,7 @@
 														"type": "Expression"
 													}
 												}
-											},
-											"linkedServiceParameters": {}
+											}
 										},
 										"staging": {},
 										"compute": {
@@ -1957,6 +1928,72 @@
 									}
 								}
 							]
+						}
+					},
+					{
+						"name": "viewcreation",
+						"type": "Script",
+						"dependsOn": [
+							{
+								"activity": "ForEach1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"linkedServiceName": {
+							"referenceName": "azsqldblink",
+							"type": "LinkedServiceReference"
+						},
+						"typeProperties": {
+							"scripts": [
+								{
+									"type": "Query",
+									"text": "CREATE VIEW cartoon_details AS\nSELECT \n    c.id,\n\tc.name,\n\tc.status,\n\tc.species,\n\tc.type,\n\tc.gender,\n\tc.image_url,\n\tc.url AS character_url,\n\tc.created AS  character_created,\n\tc.origin_name,\n\tc.origin_url,\n\tc.location_name,\n\tc.location_url,\n\tl.type AS location_type,\n\tl.dimension AS dimension_location,\n\tl.created AS location_created\n\nFROM \n    characters c\nJOIN \n    locations l ON  c.location_name = l.name;\n"
+								}
+							],
+							"scriptBlockExecutionTimeout": "02:00:00"
+						}
+					},
+					{
+						"name": "Lookup1",
+						"type": "Lookup",
+						"dependsOn": [
+							{
+								"activity": "viewcreation",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": "select * from dbo.cartoon_details;",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "azsqldb",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
 						}
 					}
 				],
@@ -1975,7 +2012,7 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/dataflow_silver_jsonSRC')]"
+				"[concat(variables('factoryId'), '/dataflows/silver_loaddataflow_sql')]"
 			]
 		},
 		{

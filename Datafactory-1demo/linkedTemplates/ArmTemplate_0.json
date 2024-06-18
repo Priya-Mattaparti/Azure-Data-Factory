@@ -340,25 +340,6 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/credential_ADF_Managed_Id')]",
-			"type": "Microsoft.DataFactory/factories/credentials",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "ManagedIdentity",
-				"typeProperties": {
-					"resourceId": "/subscriptions/6053644e-c095-4d41-90ad-43797b9dfe90/resourceGroups/darafactoryseries/providers/Microsoft.ManagedIdentity/userAssignedIdentities/ADF_Managed_Id"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/default')]",
-			"type": "Microsoft.DataFactory/factories/managedVirtualNetworks",
-			"apiVersion": "2018-06-01",
-			"properties": {},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/flowlet1')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -380,18 +361,62 @@
 					],
 					"scriptLines": [
 						"input(output(",
+						"          id as integer,",
+						"          name as string,",
+						"          status as string,",
+						"          species as string,",
+						"          type as string,",
+						"          gender as string,",
+						"          dimension as string,",
+						"          origin_name as string,",
+						"          origin_url as string,",
+						"          location_name as string,",
+						"          location_url as string,",
+						"          image_url as string,",
+						"          url as string,",
 						"          created as string",
 						"     ),",
 						"     order: 0,",
 						"     allowSchemaDrift: true) ~> input1",
 						"input1 derive(created = toTimestamp(created, \"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'\",'UTC')) ~> derivedColumn1",
 						"derivedColumn1 output(mapColumn(",
-						"          each(match(/* All input columns */ true()),",
-						"               /* Input name */ $$ = $$)",
+						"          id,",
+						"          name,",
+						"          status,",
+						"          species,",
+						"          type,",
+						"          gender,",
+						"          dimension,",
+						"          origin_name,",
+						"          origin_url,",
+						"          location_name,",
+						"          location_url,",
+						"          image_url,",
+						"          url,",
+						"          created",
 						"     )) ~> output1"
 					]
 				}
 			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/credential_ADF_Managed_Id')]",
+			"type": "Microsoft.DataFactory/factories/credentials",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "ManagedIdentity",
+				"typeProperties": {
+					"resourceId": "/subscriptions/6053644e-c095-4d41-90ad-43797b9dfe90/resourceGroups/darafactoryseries/providers/Microsoft.ManagedIdentity/userAssignedIdentities/ADF_Managed_Id"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/default')]",
+			"type": "Microsoft.DataFactory/factories/managedVirtualNetworks",
+			"apiVersion": "2018-06-01",
+			"properties": {},
 			"dependsOn": []
 		},
 		{
