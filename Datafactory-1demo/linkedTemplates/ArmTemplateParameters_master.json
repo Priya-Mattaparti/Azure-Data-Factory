@@ -65,8 +65,17 @@
 		"Ls_ADLSGen2_Adfgen2accountstorage_SAMI_properties_typeProperties_url": {
 			"value": "@{linkedService().url_storage}"
 		},
+		"RestServiceCart_properties_typeProperties_url": {
+			"value": "https://dummyjson.com/"
+		},
+		"RestServiceRickandMortyAPI_properties_typeProperties_url": {
+			"value": "https://rickandmortyapi.com/api/"
+		},
 		"RestServicemp_properties_typeProperties_url": {
 			"value": "https://api.escuelajs.co/api/v1/categories"
+		},
+		"RickandmontyBaseURLRestService_properties_typeProperties_url": {
+			"value": "https://rickandmortyapi.com/api/"
 		},
 		"SqlServer1_properties_typeProperties_server": {
 			"value": "sqladfdbserver"
@@ -100,12 +109,6 @@
 		},
 		"trigger_ms_properties_pipeline_parameters_windowEnd": {
 			"value": "04/22/2024, 12:15:00 AM "
-		},
-		"RestServiceCart_properties_typeProperties_url": {
-			"value": "https://dummyjson.com/"
-		},
-		"RestServiceRickandMortyAPI_properties_typeProperties_url": {
-			"value": "https://rickandmortyapi.com/api/location"
 		},
 		"containerUri": {
 			"value": ""

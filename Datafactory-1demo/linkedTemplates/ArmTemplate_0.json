@@ -39,9 +39,21 @@
 			"type": "string",
 			"defaultValue": "@{linkedService().url_storage}"
 		},
+		"RestServiceCart_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://dummyjson.com/"
+		},
+		"RestServiceRickandMortyAPI_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://rickandmortyapi.com/api/"
+		},
 		"RestServicemp_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://api.escuelajs.co/api/v1/categories"
+		},
+		"RickandmontyBaseURLRestService_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://rickandmortyapi.com/api/"
 		},
 		"SqlServer1_properties_typeProperties_server": {
 			"type": "string",
@@ -58,14 +70,6 @@
 		"pocDataLakeStoragegen2_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://adfgen2account.dfs.core.windows.net/"
-		},
-		"RestServiceCart_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "https://dummyjson.com/"
-		},
-		"RestServiceRickandMortyAPI_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "https://rickandmortyapi.com/api/location"
 		}
 	},
 	"variables": {
@@ -197,6 +201,38 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/RestServiceCart')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Fake Store API cart",
+				"annotations": [],
+				"type": "RestService",
+				"typeProperties": {
+					"url": "[parameters('RestServiceCart_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": true,
+					"authenticationType": "Anonymous"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/RestServiceRickandMortyAPI')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "rickandmortyapi.com",
+				"annotations": [],
+				"type": "RestService",
+				"typeProperties": {
+					"url": "[parameters('RestServiceRickandMortyAPI_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": true,
+					"authenticationType": "Anonymous"
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/RestServicemp')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -205,6 +241,22 @@
 				"type": "RestService",
 				"typeProperties": {
 					"url": "[parameters('RestServicemp_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": true,
+					"authenticationType": "Anonymous"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/RickandmontyBaseURLRestService')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "RickandMonty abse APi https://rickandmortyapi.com/api/",
+				"annotations": [],
+				"type": "RestService",
+				"typeProperties": {
+					"url": "[parameters('RickandmontyBaseURLRestService_properties_typeProperties_url')]",
 					"enableServerCertificateValidation": true,
 					"authenticationType": "Anonymous"
 				}
@@ -304,38 +356,6 @@
 			"type": "Microsoft.DataFactory/factories/managedVirtualNetworks",
 			"apiVersion": "2018-06-01",
 			"properties": {},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/RestServiceCart')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Fake Store API cart",
-				"annotations": [],
-				"type": "RestService",
-				"typeProperties": {
-					"url": "[parameters('RestServiceCart_properties_typeProperties_url')]",
-					"enableServerCertificateValidation": true,
-					"authenticationType": "Anonymous"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/RestServiceRickandMortyAPI')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "rickandmortyapi.com",
-				"annotations": [],
-				"type": "RestService",
-				"typeProperties": {
-					"url": "[parameters('RestServiceRickandMortyAPI_properties_typeProperties_url')]",
-					"enableServerCertificateValidation": true,
-					"authenticationType": "Anonymous"
-				}
-			},
 			"dependsOn": []
 		},
 		{
@@ -476,34 +496,6 @@
 					"location": {
 						"type": "AzureBlobFSLocation",
 						"folderPath": "SampleOutput",
-						"fileSystem": "files"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/pocDataLakeStoragegen2')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/DelimitedText1')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "pocDataLakeStoragegen2",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"fileName": "data.csv",
 						"fileSystem": "files"
 					},
 					"columnDelimiter": ",",

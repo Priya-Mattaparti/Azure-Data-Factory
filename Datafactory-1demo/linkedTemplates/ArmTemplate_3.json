@@ -7,15 +7,115 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "Datafactory-1demo"
 		},
-		"LS_ABS_AutoVNIR_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'LS_ABS_AutoVNIR'"
+		"LS_AzureBlobStorage_adfstorageaccount_properties_typeProperties_sasUri_secretName": {
+			"type": "string",
+			"defaultValue": "SAS-ABS-SAS-URI-Adfstorageaccount"
+		},
+		"Ls_ABS_adfstorageaccounts_UAMI_properties_typeProperties_serviceEndpoint": {
+			"type": "string",
+			"defaultValue": "https://adfstrorageaccounts.blob.core.windows.net/"
+		},
+		"WebConnector_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://www.careerpower.in/states-and-capitals-of-india.html"
 		}
 	},
 	"variables": {
 		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
 	},
 	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/LS_AzureBlobStorage_adfstorageaccount')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"sasUri": {
+						"type": "AzureKeyVaultSecret",
+						"store": {
+							"referenceName": "AzureKeyVault_Vault_access_policy",
+							"type": "LinkedServiceReference"
+						},
+						"secretName": "[parameters('LS_AzureBlobStorage_adfstorageaccount_properties_typeProperties_sasUri_secretName')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Ls_ABS_adfstorageaccounts_UAMI')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Blob storage linked service with User Assigned Managed Identity",
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"serviceEndpoint": "[parameters('Ls_ABS_adfstorageaccounts_UAMI_properties_typeProperties_serviceEndpoint')]",
+					"accountKind": "StorageV2",
+					"credential": {
+						"referenceName": "credential_ADF_Managed_Id",
+						"type": "CredentialReference"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/WebConnector')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "Web",
+				"typeProperties": {
+					"url": "[parameters('WebConnector_properties_typeProperties_url')]",
+					"authenticationType": "Anonymous"
+				},
+				"connectVia": {
+					"referenceName": "onpremMysqlruntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AutoVNIR')]",
+			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "Managed",
+				"description": "Managed virtual network with Azure IR",
+				"typeProperties": {
+					"computeProperties": {
+						"location": "South India",
+						"dataFlowProperties": {
+							"computeType": "General",
+							"coreCount": 8,
+							"timeToLive": 10,
+							"cleanup": false,
+							"customProperties": []
+						},
+						"copyComputeScaleProperties": {
+							"dataIntegrationUnit": 16,
+							"timeToLive": 10
+						},
+						"pipelineExternalComputeScaleProperties": {
+							"timeToLive": 10,
+							"numberOfPipelineNodes": 1,
+							"numberOfExternalNodes": 1
+						}
+					}
+				},
+				"managedVirtualNetwork": {
+					"type": "ManagedVirtualNetworkReference",
+					"referenceName": "default"
+				}
+			},
+			"dependsOn": []
+		},
 		{
 			"name": "[concat(parameters('factoryName'), '/AddColumnInTable')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
@@ -1312,6 +1412,502 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/fetch data from APIpipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "ForEach1",
+						"type": "ForEach",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@pipeline().parameters.Links",
+								"type": "Expression"
+							},
+							"isSequential": false,
+							"activities": [
+								{
+									"name": "CopyFromAPI2Blob",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "RestSource",
+											"httpRequestTimeout": "00:01:40",
+											"requestInterval": "00.00:00:00.010",
+											"requestMethod": "GET",
+											"paginationRules": {
+												"AbsoluteUrl": "$.info.next"
+											}
+										},
+										"sink": {
+											"type": "DelimitedTextSink",
+											"storeSettings": {
+												"type": "AzureBlobStorageWriteSettings"
+											},
+											"formatSettings": {
+												"type": "DelimitedTextWriteSettings",
+												"quoteAllText": true,
+												"fileExtension": ".txt"
+											}
+										},
+										"enableStaging": false,
+										"translator": {
+											"type": "TabularTranslator",
+											"mappings": [
+												{
+													"source": {
+														"path": "[['id']"
+													},
+													"sink": {
+														"name": "id",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['name']"
+													},
+													"sink": {
+														"name": "name",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['status']"
+													},
+													"sink": {
+														"name": "status",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['species']"
+													},
+													"sink": {
+														"name": "species",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['type']"
+													},
+													"sink": {
+														"name": "type",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['gender']"
+													},
+													"sink": {
+														"name": "gender",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['origin']['name']"
+													},
+													"sink": {
+														"name": "origin_name",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['origin']['url']"
+													},
+													"sink": {
+														"name": "origin_url",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['location']['name']"
+													},
+													"sink": {
+														"name": "location_name",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['location']['url']"
+													},
+													"sink": {
+														"name": "location_url",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['image']"
+													},
+													"sink": {
+														"name": "image",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['url']"
+													},
+													"sink": {
+														"name": "url",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['created']"
+													},
+													"sink": {
+														"name": "created",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['dimension']"
+													},
+													"sink": {
+														"name": "dimension",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['episode']"
+													},
+													"sink": {
+														"name": "episode",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['residents']"
+													},
+													"sink": {
+														"name": "residents",
+														"type": "String"
+													}
+												}
+											],
+											"collectionReference": "$['results']",
+											"mapComplexValuesToString": true
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "RestResourceRickyandMorty",
+											"type": "DatasetReference",
+											"parameters": {
+												"url": {
+													"value": "@item()",
+													"type": "Expression"
+												}
+											}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "webactoutputdes",
+											"type": "DatasetReference",
+											"parameters": {
+												"filename": {
+													"value": "@concat(item(),'s.csv')",
+													"type": "Expression"
+												}
+											}
+										}
+									]
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"Links": {
+						"type": "array",
+						"defaultValue": [
+							"character",
+							"location"
+						]
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/fetch data from APIpipeline_jsondestination')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "ForEach1",
+						"type": "ForEach",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@pipeline().parameters.Links",
+								"type": "Expression"
+							},
+							"isSequential": false,
+							"activities": [
+								{
+									"name": "CopyFromAPI2Blob",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "RestSource",
+											"httpRequestTimeout": "00:01:40",
+											"requestInterval": "00.00:00:00.010",
+											"requestMethod": "GET",
+											"paginationRules": {
+												"AbsoluteUrl": "$.info.next"
+											}
+										},
+										"sink": {
+											"type": "JsonSink",
+											"storeSettings": {
+												"type": "AzureBlobStorageWriteSettings"
+											},
+											"formatSettings": {
+												"type": "JsonWriteSettings",
+												"filePattern": "arrayOfObjects"
+											}
+										},
+										"enableStaging": false,
+										"translator": {
+											"type": "TabularTranslator",
+											"mappings": [
+												{
+													"source": {
+														"path": "[['id']"
+													},
+													"sink": {
+														"name": "id",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['name']"
+													},
+													"sink": {
+														"name": "name",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['status']"
+													},
+													"sink": {
+														"name": "status",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['species']"
+													},
+													"sink": {
+														"name": "species",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['type']"
+													},
+													"sink": {
+														"name": "type",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['gender']"
+													},
+													"sink": {
+														"name": "gender",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['origin']['name']"
+													},
+													"sink": {
+														"name": "origin_name",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['origin']['url']"
+													},
+													"sink": {
+														"name": "origin_url",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['location']['name']"
+													},
+													"sink": {
+														"name": "location_name",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['location']['url']"
+													},
+													"sink": {
+														"name": "location_url",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['image']"
+													},
+													"sink": {
+														"name": "image",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['url']"
+													},
+													"sink": {
+														"name": "url",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['created']"
+													},
+													"sink": {
+														"name": "created",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['dimension']"
+													},
+													"sink": {
+														"name": "dimension",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['episode']"
+													},
+													"sink": {
+														"name": "episode",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['residents']"
+													},
+													"sink": {
+														"name": "residents",
+														"type": "String"
+													}
+												}
+											],
+											"collectionReference": "$['results']"
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "RestResourceRickyandMorty",
+											"type": "DatasetReference",
+											"parameters": {
+												"url": {
+													"value": "@item()",
+													"type": "Expression"
+												}
+											}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "Json_weboutputDes",
+											"type": "DatasetReference",
+											"parameters": {
+												"name": {
+													"value": "@concat(item(),'s.json')",
+													"type": "Expression"
+												}
+											}
+										}
+									]
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"Links": {
+						"type": "array",
+						"defaultValue": [
+							"character",
+							"location"
+						]
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/if_fullload_pipeline')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -1867,6 +2463,130 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/pagnation_pipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "RestSource",
+								"httpRequestTimeout": "00:01:40",
+								"requestInterval": "00.00:00:00.010",
+								"requestMethod": "GET",
+								"paginationRules": {
+									"AbsoluteUrl": "$.info.next"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"path": "[['id']"
+										},
+										"sink": {
+											"name": "id",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "[['name']"
+										},
+										"sink": {
+											"name": "name"
+										}
+									},
+									{
+										"source": {
+											"path": "[['type']"
+										},
+										"sink": {
+											"name": "type"
+										}
+									},
+									{
+										"source": {
+											"path": "[['dimension']"
+										},
+										"sink": {
+											"name": "dimension"
+										}
+									},
+									{
+										"source": {
+											"path": "[['url']"
+										},
+										"sink": {
+											"name": "url"
+										}
+									},
+									{
+										"source": {
+											"path": "[['created']"
+										},
+										"sink": {
+											"name": "created"
+										}
+									}
+								],
+								"collectionReference": "$['results']",
+								"mapComplexValuesToString": false
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "RestResourceRickyandMorty",
+								"type": "DatasetReference",
+								"parameters": {
+									"url": "location"
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "webactoutputdes",
+								"type": "DatasetReference",
+								"parameters": {
+									"filename": "locations.csv"
+								}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/PPP_Loan_Dataset')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -1974,799 +2694,9 @@
 					"path": ""
 				}
 			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/LS_ABS_AutoVNIR')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureBlobStorage",
-				"typeProperties": {
-					"connectionString": "[parameters('LS_ABS_AutoVNIR_connectionString')]"
-				},
-				"connectVia": {
-					"referenceName": "AutoVNIR",
-					"type": "IntegrationRuntimeReference"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Auditlogdataflowwithfile')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "Dumylogfile",
-								"type": "DatasetReference"
-							},
-							"name": "source1"
-						},
-						{
-							"dataset": {
-								"referenceName": "Logauditsource",
-								"type": "DatasetReference"
-							},
-							"name": "logfilesource"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "Logauditsink",
-								"type": "DatasetReference"
-							},
-							"name": "sink1"
-						}
-					],
-					"transformations": [
-						{
-							"name": "derivedColumn1"
-						},
-						{
-							"name": "select1"
-						},
-						{
-							"name": "union1"
-						}
-					],
-					"scriptLines": [
-						"parameters{",
-						"     ADFName as string,",
-						"     PipelineName as string,",
-						"     Status as string,",
-						"     RunID as string,",
-						"     TriggerName as string,",
-						"     TriggerTime as string,",
-						"     LogFileName as string",
-						"}",
-						"source(output(",
-						"          log as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false) ~> source1",
-						"source(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     wildcardPaths:[('pipelinelogs/'+$LogFileName)]) ~> logfilesource",
-						"source1 derive(ADFName = $ADFName,",
-						"          PipelineName = $PipelineName,",
-						"          Status = $Status,",
-						"          RunID = $RunID,",
-						"          TriggerName = $TriggerName,",
-						"          TriggerTime = $TriggerTime) ~> derivedColumn1",
-						"derivedColumn1 select(mapColumn(",
-						"          ADFName,",
-						"          PipelineName,",
-						"          Status,",
-						"          RunID,",
-						"          TriggerName,",
-						"          TriggerTime",
-						"     ),",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> select1",
-						"select1, logfilesource union(byName: true)~> union1",
-						"union1 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     partitionFileNames:[($LogFileName)],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     mapColumn(",
-						"          ADFName,",
-						"          PipelineName,",
-						"          Status,",
-						"          RunID,",
-						"          TriggerName,",
-						"          TriggerTime",
-						"     ),",
-						"     partitionBy('hash', 1)) ~> sink1"
-					]
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Auditlogdataflowwithoutfile')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "Dumylogfile",
-								"type": "DatasetReference"
-							},
-							"name": "Dummytsource"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "Logauditsink",
-								"type": "DatasetReference"
-							},
-							"name": "sink1"
-						}
-					],
-					"transformations": [
-						{
-							"name": "derivedColumn1"
-						},
-						{
-							"name": "select1"
-						}
-					],
-					"scriptLines": [
-						"parameters{",
-						"     ADFName as string,",
-						"     PipelineName as string,",
-						"     Status as string,",
-						"     RunID as string,",
-						"     TriggerName as string,",
-						"     TriggerTime as string,",
-						"     LogFileName as string",
-						"}",
-						"source(output(",
-						"          log as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false) ~> Dummytsource",
-						"Dummytsource derive(ADFName = $ADFName,",
-						"          PipelineName = $PipelineName,",
-						"          Status = $Status,",
-						"          RunID = $RunID,",
-						"          TriggerName = $TriggerName,",
-						"          TriggerTime = $TriggerTime) ~> derivedColumn1",
-						"derivedColumn1 select(mapColumn(",
-						"          ADFName,",
-						"          PipelineName,",
-						"          Status,",
-						"          RunID,",
-						"          TriggerName,",
-						"          TriggerTime",
-						"     ),",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> select1",
-						"select1 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     partitionFileNames:[($LogFileName)],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     mapColumn(",
-						"          ADFName,",
-						"          PipelineName,",
-						"          Status,",
-						"          RunID,",
-						"          TriggerName,",
-						"          TriggerTime",
-						"     ),",
-						"     partitionBy('hash', 1)) ~> sink1"
-					]
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/dataflow_REQ')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "Emp_300",
-								"type": "DatasetReference"
-							},
-							"name": "Employee300Tablesource"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "Req_ParquetBlob",
-								"type": "DatasetReference"
-							},
-							"name": "BlobParqetsink"
-						}
-					],
-					"transformations": [
-						{
-							"name": "derivedColumn1"
-						}
-					],
-					"scriptLines": [
-						"parameters{",
-						"     flname as string",
-						"}",
-						"source(output(",
-						"          Id as integer,",
-						"          Name as string,",
-						"          Age as integer,",
-						"          Department as string,",
-						"          Salary as integer,",
-						"          InsertedAt as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     inferDriftedColumnTypes: true,",
-						"     waterMarkColumn: 'Id',",
-						"     isolationLevel: 'READ_UNCOMMITTED',",
-						"     format: 'table',",
-						"     partitionBy('key',",
-						"          0,",
-						"          InsertedAt",
-						"     )) ~> Employee300Tablesource",
-						"Employee300Tablesource derive(Filename = concat($flname, toString(InsertedAt), '.parquet')) ~> derivedColumn1",
-						"derivedColumn1 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     format: 'parquet',",
-						"     rowUrlColumn:'Filename',",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> BlobParqetsink"
-					]
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/demodataflow1')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "DfS1",
-								"type": "DatasetReference"
-							},
-							"name": "employee"
-						},
-						{
-							"dataset": {
-								"referenceName": "DfS2",
-								"type": "DatasetReference"
-							},
-							"name": "department"
-						},
-						{
-							"dataset": {
-								"referenceName": "azsqldb",
-								"type": "DatasetReference"
-							},
-							"name": "finanaceEmployeetable"
-						},
-						{
-							"dataset": {
-								"referenceName": "FinanceEmpfile",
-								"type": "DatasetReference"
-							},
-							"name": "FinanaceEmpfile"
-						},
-						{
-							"dataset": {
-								"referenceName": "DfS3",
-								"type": "DatasetReference"
-							},
-							"name": "UnpivotDatasource"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "DFfiles",
-								"type": "DatasetReference"
-							},
-							"name": "sink1"
-						}
-					],
-					"transformations": [
-						{
-							"name": "join1"
-						},
-						{
-							"name": "UsernameAndFullnameComns"
-						},
-						{
-							"name": "aggregateonDepart"
-						},
-						{
-							"name": "splitbasedondepartmentname"
-						},
-						{
-							"name": "selectExceptdepartmentID"
-						},
-						{
-							"name": "sortAgeBelow"
-						},
-						{
-							"name": "RowsDsntExists"
-						},
-						{
-							"name": "pivotonGender"
-						},
-						{
-							"name": "unpivot1"
-						},
-						{
-							"name": "window1"
-						},
-						{
-							"name": "filterFisrtRankRecords"
-						},
-						{
-							"name": "lookupfornewrecords"
-						},
-						{
-							"name": "join2"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          EmployeeID as string,",
-						"          FirstName as string,",
-						"          LastName as string,",
-						"          Email as string,",
-						"          DepartmentID as string,",
-						"          Age as string,",
-						"          Gender as string,",
-						"          Salary as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false) ~> employee",
-						"source(output(",
-						"          DepartmentID as string,",
-						"          DepartmentName as string,",
-						"          Location as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false) ~> department",
-						"source(output(",
-						"          EmployeeID as string,",
-						"          Name as string,",
-						"          Age as string,",
-						"          Department as string,",
-						"          Salary as string,",
-						"          InsertedAt as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     isolationLevel: 'READ_UNCOMMITTED',",
-						"     format: 'table') ~> finanaceEmployeetable",
-						"source(output(",
-						"          EmployeeID as string,",
-						"          Name as string,",
-						"          Age as string,",
-						"          Department as string,",
-						"          Salary as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false) ~> FinanaceEmpfile",
-						"source(output(",
-						"          Vendor as string,",
-						"          Apple as string,",
-						"          Beetroot as string,",
-						"          Carrot as string,",
-						"          Dates as string,",
-						"          Kiwi as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false) ~> UnpivotDatasource",
-						"UsernameAndFullnameComns, department join(employee@DepartmentID == department@DepartmentID,",
-						"     joinType:'inner',",
-						"     matchType:'exact',",
-						"     ignoreSpaces: false,",
-						"     broadcast: 'auto')~> join1",
-						"employee derive(UserName = lower(concat(substring(FirstName,1,1),LastName)),",
-						"          FullName = concat(FirstName,LastName),",
-						"     partitionBy('roundRobin', 2)) ~> UsernameAndFullnameComns",
-						"join1 aggregate(groupBy(DepartmentName),",
-						"     TotalEmployeesPerDepartment = count(EmployeeID)) ~> aggregateonDepart",
-						"selectExceptdepartmentID split(lesserOrEqual(Age,'30'),",
-						"     greater(Age,'30')&&lesserOrEqual(Age,'40'),",
-						"     disjoint: false) ~> splitbasedondepartmentname@(Below30, Above30, experiencedAbove40)",
-						"join1 select(mapColumn(",
-						"          EmployeeID,",
-						"          FirstName,",
-						"          LastName,",
-						"          Email,",
-						"          Age,",
-						"          Gender,",
-						"          UserName,",
-						"          FullName,",
-						"          DepartmentName,",
-						"          Location",
-						"     ),",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> selectExceptdepartmentID",
-						"splitbasedondepartmentname@Below30 sort(asc(toInteger(EmployeeID), true),",
-						"     caseInsensitive: true) ~> sortAgeBelow",
-						"FinanaceEmpfile, finanaceEmployeetable exists(FinanaceEmpfile@EmployeeID == finanaceEmployeetable@EmployeeID,",
-						"     negate:true,",
-						"     broadcast: 'auto')~> RowsDsntExists",
-						"join1 pivot(groupBy(DepartmentName),",
-						"     pivotBy(Gender),",
-						"     {} = count(EmployeeID),",
-						"     columnNaming: '$N$V',",
-						"     lateral: true) ~> pivotonGender",
-						"UnpivotDatasource unpivot(output(",
-						"          Fruits as string,",
-						"          Quantity as string",
-						"     ),",
-						"     ungroupBy(Vendor),",
-						"     lateral: true,",
-						"     ignoreNullPivots: false) ~> unpivot1",
-						"employee window(over(DepartmentID),",
-						"     desc(Salary, true),",
-						"     DenseRank = denseRank(),",
-						"     partitionBy('key',",
-						"          0,",
-						"          DepartmentID",
-						"     )) ~> window1",
-						"window1 filter(DenseRank==1) ~> filterFisrtRankRecords",
-						"FinanaceEmpfile, finanaceEmployeetable lookup(FinanaceEmpfile@EmployeeID == finanaceEmployeetable@EmployeeID,",
-						"     multiple: false,",
-						"     pickup: 'any',",
-						"     partitionBy('hash', 1),",
-						"     broadcast: 'auto')~> lookupfornewrecords",
-						"UsernameAndFullnameComns, department join(employee@DepartmentID == department@DepartmentID,",
-						"     joinType:'outer',",
-						"     matchType:'exact',",
-						"     ignoreSpaces: false,",
-						"     broadcast: 'auto')~> join2",
-						"sortAgeBelow sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     mapColumn(",
-						"          EmployeeID,",
-						"          FirstName,",
-						"          LastName,",
-						"          Email,",
-						"          Age,",
-						"          Gender,",
-						"          UserName,",
-						"          FullName,",
-						"          DepartmentName,",
-						"          Location",
-						"     )) ~> sink1"
-					]
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/demodataflow2')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "DFJson",
-								"type": "DatasetReference"
-							},
-							"name": "JsonSource"
-						},
-						{
-							"dataset": {
-								"referenceName": "datafile2",
-								"type": "DatasetReference"
-							},
-							"name": "salesdatafile"
-						},
-						{
-							"dataset": {
-								"referenceName": "FinanceEmpfile",
-								"type": "DatasetReference"
-							},
-							"name": "Finanacedatafile"
-						},
-						{
-							"dataset": {
-								"referenceName": "AzureSqlTable1",
-								"type": "DatasetReference"
-							},
-							"name": "Employeetablesource"
-						},
-						{
-							"dataset": {
-								"referenceName": "newempdatafile",
-								"type": "DatasetReference"
-							},
-							"name": "newempdatasource"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "DFfiles",
-								"type": "DatasetReference"
-							},
-							"name": "Flattensink",
-							"rejectedDataLinkedService": {
-								"referenceName": "pocDataLakeStoragegen2",
-								"type": "LinkedServiceReference"
-							}
-						},
-						{
-							"dataset": {
-								"referenceName": "DFfiles",
-								"type": "DatasetReference"
-							},
-							"name": "Formatterssink",
-							"rejectedDataLinkedService": {
-								"referenceName": "pocDataLakeStoragegen2",
-								"type": "LinkedServiceReference"
-							}
-						},
-						{
-							"name": "cachesink"
-						},
-						{
-							"dataset": {
-								"referenceName": "NewDataUpdatedfile",
-								"type": "DatasetReference"
-							},
-							"name": "empsink"
-						}
-					],
-					"transformations": [
-						{
-							"name": "flatten1"
-						},
-						{
-							"name": "parseaddress"
-						},
-						{
-							"name": "stringifyContact"
-						},
-						{
-							"name": "parseconcat"
-						},
-						{
-							"name": "union1"
-						},
-						{
-							"name": "EmployeeIDKey"
-						},
-						{
-							"name": "derivedEmployeeIDColumntoUpdated"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          Address as string,",
-						"          contact as (mail as string, mobile as long),",
-						"          employee_age as short,",
-						"          employee_name as string,",
-						"          employee_salary as integer,",
-						"          id as short,",
-						"          skills as string[]",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     documentForm: 'arrayOfDocuments') ~> JsonSource",
-						"source(output(",
-						"          EmployeeID as string,",
-						"          Name as string,",
-						"          Department as string,",
-						"          Salary as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false) ~> salesdatafile",
-						"source(output(",
-						"          EmployeeID as string,",
-						"          Name as string,",
-						"          Age as string,",
-						"          Department as string,",
-						"          Salary as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false) ~> Finanacedatafile",
-						"source(output(",
-						"          MaxEmpID as integer",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     isolationLevel: 'READ_UNCOMMITTED',",
-						"     query: 'select max(EmployeeID) as MaxEmpID from dbo.emp',",
-						"     format: 'query') ~> Employeetablesource",
-						"source(output(",
-						"          Name as string,",
-						"          Age as integer,",
-						"          Department as string,",
-						"          Salary as integer",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     inferDriftedColumnTypes: true,",
-						"     ignoreNoFilesFound: false) ~> newempdatasource",
-						"JsonSource foldDown(unroll(skills),",
-						"     mapColumn(",
-						"          id,",
-						"          employee_name,",
-						"          employee_salary,",
-						"          employee_age,",
-						"          skills",
-						"     ),",
-						"     skipDuplicateMapInputs: false,",
-						"     skipDuplicateMapOutputs: false) ~> flatten1",
-						"JsonSource parse(Address = Address ? (state as string,",
-						"          street as string,",
-						"          pincode as string),",
-						"     partitionBy('hash', 1),",
-						"     format: 'delimited',",
-						"     columnNamesAsHeader: false,",
-						"     columnDelimiter: '|',",
-						"     nullValue: '') ~> parseaddress",
-						"parseaddress stringify(contact = contact ? string,",
-						"     format: 'json') ~> stringifyContact",
-						"stringifyContact parse({contact information} = contact ? (mail as string,",
-						"          mobile as long),",
-						"     partitionBy('hash', 1),",
-						"     format: 'json',",
-						"     documentForm: 'singleDocument') ~> parseconcat",
-						"salesdatafile, Finanacedatafile union(byName: true)~> union1",
-						"newempdatasource keyGenerate(output(EmployeeID as long),",
-						"     startAt: 1L,",
-						"     stepValue: 1L) ~> EmployeeIDKey",
-						"EmployeeIDKey derive(EmployeeID = toInteger(EmployeeID + cachesink#outputs()[1].MaxEmpID)) ~> derivedEmployeeIDColumntoUpdated",
-						"flatten1 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     partitionFileNames:['FlattenOData.csv'],",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     partitionBy('hash', 1)) ~> Flattensink",
-						"parseconcat sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     partitionFileNames:['FormattedData.csv'],",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     mapColumn(",
-						"          id,",
-						"          employee_name,",
-						"          employee_age,",
-						"          employee_salary,",
-						"          skills,",
-						"          mail = {contact information}.mail,",
-						"          mobile = {contact information}.mobile,",
-						"          state = Address.state,",
-						"          street = Address.street,",
-						"          pincode = Address.pincode",
-						"     ),",
-						"     partitionBy('hash', 1)) ~> Formatterssink",
-						"Employeetablesource sink(validateSchema: false,",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     store: 'cache',",
-						"     format: 'inline',",
-						"     output: false,",
-						"     saveOrder: 1) ~> cachesink",
-						"derivedEmployeeIDColumntoUpdated sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     saveOrder: 1,",
-						"     mapColumn(",
-						"          EmployeeID,",
-						"          Name,",
-						"          Age,",
-						"          Department,",
-						"          Salary",
-						"     ),",
-						"     partitionBy('hash', 1)) ~> empsink"
-					]
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/schemacopydf')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "gen2Textfile1",
-								"type": "DatasetReference"
-							},
-							"name": "ADLSsource"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "AzureSqlTable1",
-								"type": "DatasetReference"
-							},
-							"name": "DBsink"
-						}
-					],
-					"transformations": [],
-					"scriptLines": [
-						"source(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     inferDriftedColumnTypes: true,",
-						"     ignoreNoFilesFound: false) ~> ADLSsource",
-						"ADLSsource sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     input(",
-						"          EmployeeID as integer,",
-						"          Name as string,",
-						"          Age as integer,",
-						"          Department as string,",
-						"          Salary as integer",
-						"     ),",
-						"     deletable:false,",
-						"     insertable:true,",
-						"     updateable:false,",
-						"     upsertable:false,",
-						"     format: 'table',",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     errorHandlingOption: 'stopOnFirstError') ~> DBsink"
-					]
-				}
-			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/WebConnector')]"
+			]
 		}
 	]
 }

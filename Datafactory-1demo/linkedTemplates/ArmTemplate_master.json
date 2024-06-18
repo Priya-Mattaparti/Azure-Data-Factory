@@ -87,9 +87,21 @@
 			"type": "string",
 			"defaultValue": "@{linkedService().url_storage}"
 		},
+		"RestServiceCart_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://dummyjson.com/"
+		},
+		"RestServiceRickandMortyAPI_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://rickandmortyapi.com/api/"
+		},
 		"RestServicemp_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://api.escuelajs.co/api/v1/categories"
+		},
+		"RickandmontyBaseURLRestService_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://rickandmortyapi.com/api/"
 		},
 		"SqlServer1_properties_typeProperties_server": {
 			"type": "string",
@@ -134,14 +146,6 @@
 		"trigger_ms_properties_pipeline_parameters_windowEnd": {
 			"type": "string",
 			"defaultValue": "04/22/2024, 12:15:00 AM "
-		},
-		"RestServiceCart_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "https://dummyjson.com/"
-		},
-		"RestServiceRickandMortyAPI_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "https://rickandmortyapi.com/api/location"
 		},
 		"containerUri": {
 			"type": "string",
@@ -194,8 +198,17 @@
 					"Ls_ADLSGen2_Adfgen2accountstorage_SAMI_properties_typeProperties_url": {
 						"value": "[parameters('Ls_ADLSGen2_Adfgen2accountstorage_SAMI_properties_typeProperties_url')]"
 					},
+					"RestServiceCart_properties_typeProperties_url": {
+						"value": "[parameters('RestServiceCart_properties_typeProperties_url')]"
+					},
+					"RestServiceRickandMortyAPI_properties_typeProperties_url": {
+						"value": "[parameters('RestServiceRickandMortyAPI_properties_typeProperties_url')]"
+					},
 					"RestServicemp_properties_typeProperties_url": {
 						"value": "[parameters('RestServicemp_properties_typeProperties_url')]"
+					},
+					"RickandmontyBaseURLRestService_properties_typeProperties_url": {
+						"value": "[parameters('RickandmontyBaseURLRestService_properties_typeProperties_url')]"
 					},
 					"SqlServer1_properties_typeProperties_server": {
 						"value": "[parameters('SqlServer1_properties_typeProperties_server')]"
@@ -208,12 +221,6 @@
 					},
 					"pocDataLakeStoragegen2_properties_typeProperties_url": {
 						"value": "[parameters('pocDataLakeStoragegen2_properties_typeProperties_url')]"
-					},
-					"RestServiceCart_properties_typeProperties_url": {
-						"value": "[parameters('RestServiceCart_properties_typeProperties_url')]"
-					},
-					"RestServiceRickandMortyAPI_properties_typeProperties_url": {
-						"value": "[parameters('RestServiceRickandMortyAPI_properties_typeProperties_url')]"
 					}
 				}
 			},
@@ -279,15 +286,6 @@
 					},
 					"LS_ABS_AccountKey_properties_typeProperties_connectionString_secretName": {
 						"value": "[parameters('LS_ABS_AccountKey_properties_typeProperties_connectionString_secretName')]"
-					},
-					"LS_AzureBlobStorage_adfstorageaccount_properties_typeProperties_sasUri_secretName": {
-						"value": "[parameters('LS_AzureBlobStorage_adfstorageaccount_properties_typeProperties_sasUri_secretName')]"
-					},
-					"Ls_ABS_adfstorageaccounts_UAMI_properties_typeProperties_serviceEndpoint": {
-						"value": "[parameters('Ls_ABS_adfstorageaccounts_UAMI_properties_typeProperties_serviceEndpoint')]"
-					},
-					"WebConnector_properties_typeProperties_url": {
-						"value": "[parameters('WebConnector_properties_typeProperties_url')]"
 					}
 				}
 			},
@@ -309,8 +307,14 @@
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
 					},
-					"LS_ABS_AutoVNIR_connectionString": {
-						"value": "[parameters('LS_ABS_AutoVNIR_connectionString')]"
+					"LS_AzureBlobStorage_adfstorageaccount_properties_typeProperties_sasUri_secretName": {
+						"value": "[parameters('LS_AzureBlobStorage_adfstorageaccount_properties_typeProperties_sasUri_secretName')]"
+					},
+					"Ls_ABS_adfstorageaccounts_UAMI_properties_typeProperties_serviceEndpoint": {
+						"value": "[parameters('Ls_ABS_adfstorageaccounts_UAMI_properties_typeProperties_serviceEndpoint')]"
+					},
+					"WebConnector_properties_typeProperties_url": {
+						"value": "[parameters('WebConnector_properties_typeProperties_url')]"
 					}
 				}
 			},
@@ -332,11 +336,34 @@
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
 					},
+					"LS_ABS_AutoVNIR_connectionString": {
+						"value": "[parameters('LS_ABS_AutoVNIR_connectionString')]"
+					},
 					"Trigger_gwn_properties_pipeline_parameters_windowStart": {
 						"value": "[parameters('Trigger_gwn_properties_pipeline_parameters_windowStart')]"
 					},
 					"Trigger_gwn_properties_pipeline_parameters_windowEnd": {
 						"value": "[parameters('Trigger_gwn_properties_pipeline_parameters_windowEnd')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'Datafactory-1demo_ArmTemplate_3')]"
+			]
+		},
+		{
+			"name": "Datafactory-1demo_ArmTemplate_5",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_5.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
 					},
 					"Master_trigger_properties_pipeline_parameters_windowStart": {
 						"value": "[parameters('Master_trigger_properties_pipeline_parameters_windowStart')]"
@@ -353,7 +380,7 @@
 				}
 			},
 			"dependsOn": [
-				"[resourceId('Microsoft.Resources/deployments', 'Datafactory-1demo_ArmTemplate_3')]"
+				"[resourceId('Microsoft.Resources/deployments', 'Datafactory-1demo_ArmTemplate_4')]"
 			]
 		}
 	]

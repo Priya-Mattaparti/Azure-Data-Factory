@@ -1,0 +1,144 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "Datafactory-1demo"
+		},
+		"Master_trigger_properties_pipeline_parameters_windowStart": {
+			"type": "string",
+			"defaultValue": "04/15/2024 17:40:00"
+		},
+		"Master_trigger_properties_pipeline_parameters_windowEnd": {
+			"type": "string",
+			"defaultValue": "05//2024 18:45:00"
+		},
+		"trigger_ms_properties_pipeline_parameters_windowStart": {
+			"type": "string",
+			"defaultValue": "04/22/2024, 12:00:00 AM "
+		},
+		"trigger_ms_properties_pipeline_parameters_windowEnd": {
+			"type": "string",
+			"defaultValue": "04/22/2024, 12:15:00 AM "
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline_ppp')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Data flowPPP",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "PPPdataflowtransformation",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": [],
+				"lastPublishTime": "2024-05-17T10:06:35Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Master_trigger')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Trigger that executes full load and incremental load pipeline",
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipeline": {
+					"pipelineReference": {
+						"referenceName": "multipefolderspipeline_full_incremental_V1",
+						"type": "PipelineReference"
+					},
+					"parameters": {
+						"windowStart": "[parameters('Master_trigger_properties_pipeline_parameters_windowStart')]",
+						"windowEnd": "[parameters('Master_trigger_properties_pipeline_parameters_windowEnd')]"
+					}
+				},
+				"type": "TumblingWindowTrigger",
+				"typeProperties": {
+					"frequency": "Minute",
+					"interval": 15,
+					"startTime": "2024-04-19T00:00:00Z",
+					"endTime": "2024-05-09T12:00:00Z",
+					"delay": "00:00:00",
+					"maxConcurrency": 50,
+					"retryPolicy": {
+						"intervalInSeconds": 30
+					},
+					"dependsOn": []
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/trigger_ms')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"pipeline": {
+					"pipelineReference": {
+						"referenceName": "multipefolderspipeline_full_incremental_V1",
+						"type": "PipelineReference"
+					},
+					"parameters": {
+						"windowStart": "[parameters('trigger_ms_properties_pipeline_parameters_windowStart')]",
+						"windowEnd": "[parameters('trigger_ms_properties_pipeline_parameters_windowEnd')]"
+					}
+				},
+				"type": "TumblingWindowTrigger",
+				"typeProperties": {
+					"frequency": "Minute",
+					"interval": 15,
+					"startTime": "2024-04-22T00:00:00Z",
+					"endTime": "2024-05-10T07:05:00Z",
+					"delay": "00:00:00",
+					"maxConcurrency": 50,
+					"retryPolicy": {
+						"intervalInSeconds": 30
+					},
+					"dependsOn": []
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}
