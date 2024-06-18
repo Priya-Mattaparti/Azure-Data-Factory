@@ -96,7 +96,10 @@
 				"inputs": [
 					{
 						"referenceName": "RestResourceRickyandMorty",
-						"type": "DatasetReference"
+						"type": "DatasetReference",
+						"parameters": {
+							"url": "location"
+						}
 					}
 				],
 				"outputs": [
