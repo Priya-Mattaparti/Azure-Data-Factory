@@ -53,71 +53,113 @@
 										{
 											"source": {
 												"path": "['id']"
+											},
+											"sink": {
+												"path": "id"
 											}
 										},
 										{
 											"source": {
 												"path": "['name']"
+											},
+											"sink": {
+												"path": "name"
 											}
 										},
 										{
 											"source": {
 												"path": "['status']"
+											},
+											"sink": {
+												"path": "status"
 											}
 										},
 										{
 											"source": {
 												"path": "['species']"
+											},
+											"sink": {
+												"path": "species"
 											}
 										},
 										{
 											"source": {
 												"path": "['type']"
+											},
+											"sink": {
+												"path": "type"
 											}
 										},
 										{
 											"source": {
 												"path": "['gender']"
+											},
+											"sink": {
+												"path": "gender"
 											}
 										},
 										{
 											"source": {
 												"path": "['dimension']"
+											},
+											"sink": {
+												"path": "dimension"
 											}
 										},
 										{
 											"source": {
 												"path": "['origin']['name']"
+											},
+											"sink": {
+												"path": "origin_name"
 											}
 										},
 										{
 											"source": {
 												"path": "['origin']['url']"
+											},
+											"sink": {
+												"path": "origin_url"
 											}
 										},
 										{
 											"source": {
 												"path": "['location']['name']"
+											},
+											"sink": {
+												"path": "location_name"
 											}
 										},
 										{
 											"source": {
 												"path": "['location']['url']"
+											},
+											"sink": {
+												"path": "location_url"
 											}
 										},
 										{
 											"source": {
 												"path": "['image']"
+											},
+											"sink": {
+												"path": "image_url"
 											}
 										},
 										{
 											"source": {
 												"path": "['url']"
+											},
+											"sink": {
+												"path": "url"
 											}
 										},
 										{
 											"source": {
 												"path": "['created']"
+											},
+											"sink": {
+												"path": "created"
 											}
 										}
 									],
