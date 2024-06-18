@@ -2,7 +2,7 @@
 	"name": "RestResourceRickyandMorty",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "RickandmontyBaseURLRestService",
+			"referenceName": "RestServiceRickandMortyAPI",
 			"type": "LinkedServiceReference"
 		},
 		"parameters": {

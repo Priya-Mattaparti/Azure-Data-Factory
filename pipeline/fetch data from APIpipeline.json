@@ -155,8 +155,7 @@
 												"path": "['url']"
 											},
 											"sink": {
-												"name": "character_url",
-												"type": "String"
+												"name": "url"
 											}
 										},
 										{
@@ -167,21 +166,40 @@
 												"name": "created",
 												"type": "String"
 											}
+										},
+										{
+											"source": {
+												"path": "$['dimension']"
+											},
+											"sink": {
+												"name": "dimension"
+											}
+										},
+										{
+											"source": {
+												"path": "$['episode']"
+											},
+											"sink": {
+												"name": "episode"
+											}
+										},
+										{
+											"source": {
+												"path": "$['residents']"
+											},
+											"sink": {
+												"name": "residents"
+											}
 										}
 									],
-									"collectionReference": "$['results']"
+									"collectionReference": "$['results']",
+									"mapComplexValuesToString": true
 								}
 							},
 							"inputs": [
 								{
-									"referenceName": "RestResourcecart",
-									"type": "DatasetReference",
-									"parameters": {
-										"item": {
-											"value": "@item()",
-											"type": "Expression"
-										}
-									}
+									"referenceName": "RestResourceRickyandMorty",
+									"type": "DatasetReference"
 								}
 							],
 							"outputs": [
