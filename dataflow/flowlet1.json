@@ -1,0 +1,22 @@
+{
+	"name": "flowlet1",
+	"properties": {
+		"type": "Flowlet",
+		"typeProperties": {
+			"sources": [],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "input1"
+				}
+			],
+			"scriptLines": [
+				"input(output(",
+				"          created as string",
+				"     ),",
+				"     order: 0,",
+				"     allowSchemaDrift: true) ~> input1"
+			]
+		}
+	}
+}

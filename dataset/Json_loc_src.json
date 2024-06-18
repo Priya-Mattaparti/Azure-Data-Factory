@@ -1,0 +1,19 @@
+{
+	"name": "Json_loc_src",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "pocblobstorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "locations.json",
+				"container": "webactivityoutput"
+			}
+		},
+		"schema": {}
+	}
+}
