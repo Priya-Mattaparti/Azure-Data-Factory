@@ -7,10 +7,6 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "Datafactory-1demo"
 		},
-		"FileServer1_password": {
-			"type": "secureString",
-			"metadata": "Secure string for 'password' of 'FileServer1'"
-		},
 		"ABS_LS_SAS_Token_properties_typeProperties_sasUri_secretName": {
 			"type": "string",
 			"defaultValue": "SAS-ABS-SAS-URI-Adfstorageaccount"
@@ -26,28 +22,121 @@
 		"AzureDataLakeStorage_SPA_properties_typeProperties_servicePrincipalId": {
 			"type": "string",
 			"defaultValue": "e75b636f6d3c4114b8718cda29438ad8"
-		},
-		"AzureKeyVault_ADF_ManagedUserIdentity_properties_typeProperties_baseUrl": {
-			"type": "string",
-			"defaultValue": "https://ADFLinkSKeys.vault.azure.net/"
-		},
-		"FileServer1_properties_typeProperties_host": {
-			"type": "string",
-			"defaultValue": "\\\\OSI-L-0688\\sample"
-		},
-		"FileServer1_properties_typeProperties_userId": {
-			"type": "string",
-			"defaultValue": "pmattaparti"
-		},
-		"LS_ABS_AccountKey_properties_typeProperties_connectionString_secretName": {
-			"type": "string",
-			"defaultValue": "ABS-adfgen2account-conn-String"
 		}
 	},
 	"variables": {
 		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
 	},
 	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/Silver_layer_des')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "azsqldblink",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"tbname": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": {
+						"value": "@dataset().tbname",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SourceDataset_7ml')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "pocDataLakeStoragegen2",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "employees",
+						"fileSystem": "files"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "EmployeeID",
+						"type": "String"
+					},
+					{
+						"name": "Name",
+						"type": "String"
+					},
+					{
+						"name": "Age",
+						"type": "String"
+					},
+					{
+						"name": "Department",
+						"type": "String"
+					},
+					{
+						"name": "Salary",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SourceDataset_gwn')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "pocDataLakeStoragegen2",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"filename": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@dataset().filename",
+							"type": "Expression"
+						},
+						"folderPath": "employees",
+						"fileSystem": "files"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
 		{
 			"name": "[concat(parameters('factoryName'), '/adlsempfile')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
@@ -572,66 +661,6 @@
 							"type": "LinkedServiceReference"
 						},
 						"secretName": "ADLSGen2-storage-ADF"
-					}
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/AzureKeyVault_ADF_ManagedUserIdentity')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureKeyVault",
-				"typeProperties": {
-					"baseUrl": "[parameters('AzureKeyVault_ADF_ManagedUserIdentity_properties_typeProperties_baseUrl')]",
-					"credential": {
-						"referenceName": "credential_ADF_Managed_Id",
-						"type": "CredentialReference"
-					}
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/FileServer1')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "on prem",
-				"annotations": [],
-				"type": "FileServer",
-				"typeProperties": {
-					"host": "[parameters('FileServer1_properties_typeProperties_host')]",
-					"userId": "[parameters('FileServer1_properties_typeProperties_userId')]",
-					"password": {
-						"type": "SecureString",
-						"value": "[parameters('FileServer1_password')]"
-					}
-				},
-				"connectVia": {
-					"referenceName": "onpremMysqlruntime",
-					"type": "IntegrationRuntimeReference"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/LS_ABS_AccountKey')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureBlobStorage",
-				"typeProperties": {
-					"connectionString": {
-						"type": "AzureKeyVaultSecret",
-						"store": {
-							"referenceName": "AzureKeyVault_Vault_access_policy",
-							"type": "LinkedServiceReference"
-						},
-						"secretName": "[parameters('LS_ABS_AccountKey_properties_typeProperties_connectionString_secretName')]"
 					}
 				}
 			},

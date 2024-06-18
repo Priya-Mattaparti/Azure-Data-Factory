@@ -260,9 +260,6 @@
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
 					},
-					"FileServer1_password": {
-						"value": "[parameters('FileServer1_password')]"
-					},
 					"ABS_LS_SAS_Token_properties_typeProperties_sasUri_secretName": {
 						"value": "[parameters('ABS_LS_SAS_Token_properties_typeProperties_sasUri_secretName')]"
 					},
@@ -274,18 +271,6 @@
 					},
 					"AzureDataLakeStorage_SPA_properties_typeProperties_servicePrincipalId": {
 						"value": "[parameters('AzureDataLakeStorage_SPA_properties_typeProperties_servicePrincipalId')]"
-					},
-					"AzureKeyVault_ADF_ManagedUserIdentity_properties_typeProperties_baseUrl": {
-						"value": "[parameters('AzureKeyVault_ADF_ManagedUserIdentity_properties_typeProperties_baseUrl')]"
-					},
-					"FileServer1_properties_typeProperties_host": {
-						"value": "[parameters('FileServer1_properties_typeProperties_host')]"
-					},
-					"FileServer1_properties_typeProperties_userId": {
-						"value": "[parameters('FileServer1_properties_typeProperties_userId')]"
-					},
-					"LS_ABS_AccountKey_properties_typeProperties_connectionString_secretName": {
-						"value": "[parameters('LS_ABS_AccountKey_properties_typeProperties_connectionString_secretName')]"
 					}
 				}
 			},
@@ -306,6 +291,21 @@
 				"parameters": {
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
+					},
+					"FileServer1_password": {
+						"value": "[parameters('FileServer1_password')]"
+					},
+					"AzureKeyVault_ADF_ManagedUserIdentity_properties_typeProperties_baseUrl": {
+						"value": "[parameters('AzureKeyVault_ADF_ManagedUserIdentity_properties_typeProperties_baseUrl')]"
+					},
+					"FileServer1_properties_typeProperties_host": {
+						"value": "[parameters('FileServer1_properties_typeProperties_host')]"
+					},
+					"FileServer1_properties_typeProperties_userId": {
+						"value": "[parameters('FileServer1_properties_typeProperties_userId')]"
+					},
+					"LS_ABS_AccountKey_properties_typeProperties_connectionString_secretName": {
+						"value": "[parameters('LS_ABS_AccountKey_properties_typeProperties_connectionString_secretName')]"
 					},
 					"LS_AzureBlobStorage_adfstorageaccount_properties_typeProperties_sasUri_secretName": {
 						"value": "[parameters('LS_AzureBlobStorage_adfstorageaccount_properties_typeProperties_sasUri_secretName')]"
@@ -338,12 +338,6 @@
 					},
 					"LS_ABS_AutoVNIR_connectionString": {
 						"value": "[parameters('LS_ABS_AutoVNIR_connectionString')]"
-					},
-					"Trigger_gwn_properties_pipeline_parameters_windowStart": {
-						"value": "[parameters('Trigger_gwn_properties_pipeline_parameters_windowStart')]"
-					},
-					"Trigger_gwn_properties_pipeline_parameters_windowEnd": {
-						"value": "[parameters('Trigger_gwn_properties_pipeline_parameters_windowEnd')]"
 					}
 				}
 			},
@@ -364,6 +358,12 @@
 				"parameters": {
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
+					},
+					"Trigger_gwn_properties_pipeline_parameters_windowStart": {
+						"value": "[parameters('Trigger_gwn_properties_pipeline_parameters_windowStart')]"
+					},
+					"Trigger_gwn_properties_pipeline_parameters_windowEnd": {
+						"value": "[parameters('Trigger_gwn_properties_pipeline_parameters_windowEnd')]"
 					},
 					"Master_trigger_properties_pipeline_parameters_windowStart": {
 						"value": "[parameters('Master_trigger_properties_pipeline_parameters_windowStart')]"

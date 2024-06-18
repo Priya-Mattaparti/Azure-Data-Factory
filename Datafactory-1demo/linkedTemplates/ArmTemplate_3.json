@@ -7,6 +7,26 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "Datafactory-1demo"
 		},
+		"FileServer1_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'FileServer1'"
+		},
+		"AzureKeyVault_ADF_ManagedUserIdentity_properties_typeProperties_baseUrl": {
+			"type": "string",
+			"defaultValue": "https://ADFLinkSKeys.vault.azure.net/"
+		},
+		"FileServer1_properties_typeProperties_host": {
+			"type": "string",
+			"defaultValue": "\\\\OSI-L-0688\\sample"
+		},
+		"FileServer1_properties_typeProperties_userId": {
+			"type": "string",
+			"defaultValue": "pmattaparti"
+		},
+		"LS_ABS_AccountKey_properties_typeProperties_connectionString_secretName": {
+			"type": "string",
+			"defaultValue": "ABS-adfgen2account-conn-String"
+		},
 		"LS_AzureBlobStorage_adfstorageaccount_properties_typeProperties_sasUri_secretName": {
 			"type": "string",
 			"defaultValue": "SAS-ABS-SAS-URI-Adfstorageaccount"
@@ -24,6 +44,66 @@
 		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
 	},
 	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureKeyVault_ADF_ManagedUserIdentity')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureKeyVault",
+				"typeProperties": {
+					"baseUrl": "[parameters('AzureKeyVault_ADF_ManagedUserIdentity_properties_typeProperties_baseUrl')]",
+					"credential": {
+						"referenceName": "credential_ADF_Managed_Id",
+						"type": "CredentialReference"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/FileServer1')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "on prem",
+				"annotations": [],
+				"type": "FileServer",
+				"typeProperties": {
+					"host": "[parameters('FileServer1_properties_typeProperties_host')]",
+					"userId": "[parameters('FileServer1_properties_typeProperties_userId')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('FileServer1_password')]"
+					}
+				},
+				"connectVia": {
+					"referenceName": "onpremMysqlruntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LS_ABS_AccountKey')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": {
+						"type": "AzureKeyVaultSecret",
+						"store": {
+							"referenceName": "AzureKeyVault_Vault_access_policy",
+							"type": "LinkedServiceReference"
+						},
+						"secretName": "[parameters('LS_ABS_AccountKey_properties_typeProperties_connectionString_secretName')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
 		{
 			"name": "[concat(parameters('factoryName'), '/LS_AzureBlobStorage_adfstorageaccount')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
@@ -113,6 +193,28 @@
 					"type": "ManagedVirtualNetworkReference",
 					"referenceName": "default"
 				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Json_loc_src')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "pocblobstorage",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "locations.json",
+						"container": "webactivityoutput"
+					}
+				},
+				"schema": {}
 			},
 			"dependsOn": []
 		},
@@ -1661,253 +1763,6 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/fetch data from APIpipeline_jsondestination')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "ForEach1",
-						"type": "ForEach",
-						"dependsOn": [],
-						"userProperties": [],
-						"typeProperties": {
-							"items": {
-								"value": "@pipeline().parameters.Links",
-								"type": "Expression"
-							},
-							"isSequential": false,
-							"activities": [
-								{
-									"name": "CopyFromAPI2Blob",
-									"type": "Copy",
-									"dependsOn": [],
-									"policy": {
-										"timeout": "0.12:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"source": {
-											"type": "RestSource",
-											"httpRequestTimeout": "00:01:40",
-											"requestInterval": "00.00:00:00.010",
-											"requestMethod": "GET",
-											"paginationRules": {
-												"AbsoluteUrl": "$.info.next"
-											}
-										},
-										"sink": {
-											"type": "JsonSink",
-											"storeSettings": {
-												"type": "AzureBlobStorageWriteSettings"
-											},
-											"formatSettings": {
-												"type": "JsonWriteSettings",
-												"filePattern": "arrayOfObjects"
-											}
-										},
-										"enableStaging": false,
-										"translator": {
-											"type": "TabularTranslator",
-											"mappings": [
-												{
-													"source": {
-														"path": "[['id']"
-													},
-													"sink": {
-														"name": "id",
-														"type": "String"
-													}
-												},
-												{
-													"source": {
-														"path": "[['name']"
-													},
-													"sink": {
-														"name": "name",
-														"type": "String"
-													}
-												},
-												{
-													"source": {
-														"path": "[['status']"
-													},
-													"sink": {
-														"name": "status",
-														"type": "String"
-													}
-												},
-												{
-													"source": {
-														"path": "[['species']"
-													},
-													"sink": {
-														"name": "species",
-														"type": "String"
-													}
-												},
-												{
-													"source": {
-														"path": "[['type']"
-													},
-													"sink": {
-														"name": "type",
-														"type": "String"
-													}
-												},
-												{
-													"source": {
-														"path": "[['gender']"
-													},
-													"sink": {
-														"name": "gender",
-														"type": "String"
-													}
-												},
-												{
-													"source": {
-														"path": "[['origin']['name']"
-													},
-													"sink": {
-														"name": "origin_name",
-														"type": "String"
-													}
-												},
-												{
-													"source": {
-														"path": "[['origin']['url']"
-													},
-													"sink": {
-														"name": "origin_url",
-														"type": "String"
-													}
-												},
-												{
-													"source": {
-														"path": "[['location']['name']"
-													},
-													"sink": {
-														"name": "location_name",
-														"type": "String"
-													}
-												},
-												{
-													"source": {
-														"path": "[['location']['url']"
-													},
-													"sink": {
-														"name": "location_url",
-														"type": "String"
-													}
-												},
-												{
-													"source": {
-														"path": "[['image']"
-													},
-													"sink": {
-														"name": "image",
-														"type": "String"
-													}
-												},
-												{
-													"source": {
-														"path": "[['url']"
-													},
-													"sink": {
-														"name": "url",
-														"type": "String"
-													}
-												},
-												{
-													"source": {
-														"path": "[['created']"
-													},
-													"sink": {
-														"name": "created",
-														"type": "String"
-													}
-												},
-												{
-													"source": {
-														"path": "$['dimension']"
-													},
-													"sink": {
-														"name": "dimension",
-														"type": "String"
-													}
-												},
-												{
-													"source": {
-														"path": "$['episode']"
-													},
-													"sink": {
-														"name": "episode",
-														"type": "String"
-													}
-												},
-												{
-													"source": {
-														"path": "$['residents']"
-													},
-													"sink": {
-														"name": "residents",
-														"type": "String"
-													}
-												}
-											],
-											"collectionReference": "$['results']"
-										}
-									},
-									"inputs": [
-										{
-											"referenceName": "RestResourceRickyandMorty",
-											"type": "DatasetReference",
-											"parameters": {
-												"url": {
-													"value": "@item()",
-													"type": "Expression"
-												}
-											}
-										}
-									],
-									"outputs": [
-										{
-											"referenceName": "Json_weboutputDes",
-											"type": "DatasetReference",
-											"parameters": {
-												"name": {
-													"value": "@concat(item(),'s.json')",
-													"type": "Expression"
-												}
-											}
-										}
-									]
-								}
-							]
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"parameters": {
-					"Links": {
-						"type": "array",
-						"defaultValue": [
-							"character",
-							"location"
-						]
-					}
-				},
-				"annotations": []
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/if_fullload_pipeline')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -2461,242 +2316,6 @@
 				"lastPublishTime": "2024-05-06T11:25:47Z"
 			},
 			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/pagnation_pipeline')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Copy data1",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "RestSource",
-								"httpRequestTimeout": "00:01:40",
-								"requestInterval": "00.00:00:00.010",
-								"requestMethod": "GET",
-								"paginationRules": {
-									"AbsoluteUrl": "$.info.next"
-								}
-							},
-							"sink": {
-								"type": "DelimitedTextSink",
-								"storeSettings": {
-									"type": "AzureBlobStorageWriteSettings"
-								},
-								"formatSettings": {
-									"type": "DelimitedTextWriteSettings",
-									"quoteAllText": true,
-									"fileExtension": ".txt"
-								}
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"mappings": [
-									{
-										"source": {
-											"path": "[['id']"
-										},
-										"sink": {
-											"name": "id",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"path": "[['name']"
-										},
-										"sink": {
-											"name": "name"
-										}
-									},
-									{
-										"source": {
-											"path": "[['type']"
-										},
-										"sink": {
-											"name": "type"
-										}
-									},
-									{
-										"source": {
-											"path": "[['dimension']"
-										},
-										"sink": {
-											"name": "dimension"
-										}
-									},
-									{
-										"source": {
-											"path": "[['url']"
-										},
-										"sink": {
-											"name": "url"
-										}
-									},
-									{
-										"source": {
-											"path": "[['created']"
-										},
-										"sink": {
-											"name": "created"
-										}
-									}
-								],
-								"collectionReference": "$['results']",
-								"mapComplexValuesToString": false
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "RestResourceRickyandMorty",
-								"type": "DatasetReference",
-								"parameters": {
-									"url": "location"
-								}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "webactoutputdes",
-								"type": "DatasetReference",
-								"parameters": {
-									"filename": "locations.csv"
-								}
-							}
-						]
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"annotations": []
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/PPP_Loan_Dataset')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "ABS_LS_SAS_Token",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "PPP_data_150k_plus.csv",
-						"container": "adfcondemo"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "LoanRange",
-						"type": "String"
-					},
-					{
-						"name": "BusinessName",
-						"type": "String"
-					},
-					{
-						"name": "Address",
-						"type": "String"
-					},
-					{
-						"name": "City",
-						"type": "String"
-					},
-					{
-						"name": "State",
-						"type": "String"
-					},
-					{
-						"name": "Zip",
-						"type": "String"
-					},
-					{
-						"name": "NAICSCode",
-						"type": "String"
-					},
-					{
-						"name": "BusinessType",
-						"type": "String"
-					},
-					{
-						"name": "RaceEthnicity",
-						"type": "String"
-					},
-					{
-						"name": "Gender",
-						"type": "String"
-					},
-					{
-						"name": "Veteran",
-						"type": "String"
-					},
-					{
-						"name": "NonProfit",
-						"type": "String"
-					},
-					{
-						"name": "JobsRetained",
-						"type": "String"
-					},
-					{
-						"name": "DateApproved",
-						"type": "String"
-					},
-					{
-						"name": "Lender",
-						"type": "String"
-					},
-					{
-						"name": "CD",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/WebTableDataset1')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "WebConnector",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "WebTable",
-				"schema": [],
-				"typeProperties": {
-					"index": 0,
-					"path": ""
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/WebConnector')]"
-			]
 		}
 	]
 }

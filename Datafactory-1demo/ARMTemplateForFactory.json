@@ -2262,7 +2262,7 @@
 							"isSequential": false,
 							"activities": [
 								{
-									"name": "CopyFromAPI2Blob",
+									"name": "CopyFromAPI2BlobBronze",
 									"type": "Copy",
 									"dependsOn": [],
 									"policy": {
@@ -2302,8 +2302,7 @@
 														"path": "[['id']"
 													},
 													"sink": {
-														"name": "id",
-														"type": "String"
+														"path": "id"
 													}
 												},
 												{
@@ -2311,8 +2310,7 @@
 														"path": "[['name']"
 													},
 													"sink": {
-														"name": "name",
-														"type": "String"
+														"path": "name"
 													}
 												},
 												{
@@ -2320,8 +2318,7 @@
 														"path": "[['status']"
 													},
 													"sink": {
-														"name": "status",
-														"type": "String"
+														"path": "status"
 													}
 												},
 												{
@@ -2329,8 +2326,7 @@
 														"path": "[['species']"
 													},
 													"sink": {
-														"name": "species",
-														"type": "String"
+														"path": "species"
 													}
 												},
 												{
@@ -2338,8 +2334,7 @@
 														"path": "[['type']"
 													},
 													"sink": {
-														"name": "type",
-														"type": "String"
+														"path": "type"
 													}
 												},
 												{
@@ -2347,8 +2342,15 @@
 														"path": "[['gender']"
 													},
 													"sink": {
-														"name": "gender",
-														"type": "String"
+														"path": "gender"
+													}
+												},
+												{
+													"source": {
+														"path": "[['dimension']"
+													},
+													"sink": {
+														"path": "dimension"
 													}
 												},
 												{
@@ -2356,8 +2358,7 @@
 														"path": "[['origin']['name']"
 													},
 													"sink": {
-														"name": "origin_name",
-														"type": "String"
+														"path": "origin_name"
 													}
 												},
 												{
@@ -2365,8 +2366,7 @@
 														"path": "[['origin']['url']"
 													},
 													"sink": {
-														"name": "origin_url",
-														"type": "String"
+														"path": "origin_url"
 													}
 												},
 												{
@@ -2374,8 +2374,7 @@
 														"path": "[['location']['name']"
 													},
 													"sink": {
-														"name": "location_name",
-														"type": "String"
+														"path": "location_name"
 													}
 												},
 												{
@@ -2383,8 +2382,7 @@
 														"path": "[['location']['url']"
 													},
 													"sink": {
-														"name": "location_url",
-														"type": "String"
+														"path": "location_url"
 													}
 												},
 												{
@@ -2392,8 +2390,7 @@
 														"path": "[['image']"
 													},
 													"sink": {
-														"name": "image",
-														"type": "String"
+														"path": "image_url"
 													}
 												},
 												{
@@ -2401,8 +2398,7 @@
 														"path": "[['url']"
 													},
 													"sink": {
-														"name": "url",
-														"type": "String"
+														"path": "url"
 													}
 												},
 												{
@@ -2410,35 +2406,7 @@
 														"path": "[['created']"
 													},
 													"sink": {
-														"name": "created",
-														"type": "String"
-													}
-												},
-												{
-													"source": {
-														"path": "$['dimension']"
-													},
-													"sink": {
-														"name": "dimension",
-														"type": "String"
-													}
-												},
-												{
-													"source": {
-														"path": "$['episode']"
-													},
-													"sink": {
-														"name": "episode",
-														"type": "String"
-													}
-												},
-												{
-													"source": {
-														"path": "$['residents']"
-													},
-													"sink": {
-														"name": "residents",
-														"type": "String"
+														"path": "created"
 													}
 												}
 											],
@@ -2469,6 +2437,54 @@
 											}
 										}
 									]
+								},
+								{
+									"name": "DataflowSilver",
+									"type": "ExecuteDataFlow",
+									"dependsOn": [
+										{
+											"activity": "CopyFromAPI2BlobBronze",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataflow": {
+											"referenceName": "dataflow_silver_jsonSRC",
+											"type": "DataFlowReference",
+											"parameters": {},
+											"datasetParameters": {
+												"source1": {
+													"fname": {
+														"value": "@concat(item(),'s.json')",
+														"type": "Expression"
+													}
+												},
+												"sink1": {
+													"tbname": {
+														"value": "@concat(item(),'s')",
+														"type": "Expression"
+													}
+												}
+											},
+											"linkedServiceParameters": {}
+										},
+										"staging": {},
+										"compute": {
+											"coreCount": 8,
+											"computeType": "General"
+										},
+										"traceLevel": "Fine"
+									}
 								}
 							]
 						}
@@ -2490,7 +2506,8 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/RestResourceRickyandMorty')]",
-				"[concat(variables('factoryId'), '/datasets/Json_weboutputDes')]"
+				"[concat(variables('factoryId'), '/datasets/Json_weboutputDes')]",
+				"[concat(variables('factoryId'), '/dataflows/dataflow_silver_jsonSRC')]"
 			]
 		},
 		{
@@ -4614,6 +4631,62 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/Json_Characters_SRC')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "pocblobstorage",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"fname": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "@dataset().fname",
+							"type": "Expression"
+						},
+						"container": "webactivityoutput"
+					}
+				},
+				"schema": {}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/pocblobstorage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Json_charatersrc')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "pocblobstorage",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "characters.json",
+						"container": "webactivityoutput"
+					}
+				},
+				"schema": {}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/pocblobstorage')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/Json_weboutputDes')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -4637,7 +4710,8 @@
 							"type": "Expression"
 						},
 						"container": "webactivityoutput"
-					}
+					},
+					"encodingName": "UTF-8 without BOM"
 				},
 				"schema": {}
 			},
@@ -4919,12 +4993,20 @@
 					"referenceName": "azsqldblink",
 					"type": "LinkedServiceReference"
 				},
+				"parameters": {
+					"tbname": {
+						"type": "string"
+					}
+				},
 				"annotations": [],
 				"type": "AzureSqlTable",
 				"schema": [],
 				"typeProperties": {
 					"schema": "dbo",
-					"table": "characters"
+					"table": {
+						"value": "@dataset().tbname",
+						"type": "Expression"
+					}
 				}
 			},
 			"dependsOn": [
@@ -6529,6 +6611,77 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/dataflow_silver_jsonSRC')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "Json_Characters_SRC",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "Silver_layer_des",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "derivedColumn1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          created as string,",
+						"          gender as string,",
+						"          id as integer,",
+						"          image_url as string,",
+						"          location_name as string,",
+						"          location_url as string,",
+						"          name as string,",
+						"          origin_name as string,",
+						"          origin_url as string,",
+						"          species as string,",
+						"          status as string,",
+						"          type as string,",
+						"          url as string",
+						"     ),",
+						"     allowSchemaDrift: false,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     documentForm: 'arrayOfDocuments',",
+						"     preferredIntegralType: 'integer') ~> source1",
+						"source1 derive(created = toTimestamp(created, \"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'\",'UTC')) ~> derivedColumn1",
+						"derivedColumn1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     truncate:true,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError') ~> sink1"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/Json_Characters_SRC')]",
+				"[concat(variables('factoryId'), '/datasets/Silver_layer_des')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/demodataflow1')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -7103,6 +7256,9 @@
 					"transformations": [
 						{
 							"name": "derivedColumn1"
+						},
+						{
+							"name": "select1"
 						}
 					],
 					"scriptLines": [
@@ -7128,12 +7284,30 @@
 						"     timestampFormats: ['yyyy.MM.dd HH:mm:ss'],",
 						"     preferredIntegralType: 'integer') ~> source1",
 						"source1 derive(created = toTimestamp(created, \"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'\",'UTC')) ~> derivedColumn1",
-						"derivedColumn1 sink(allowSchemaDrift: true,",
+						"derivedColumn1 select(mapColumn(",
+						"          id,",
+						"          name,",
+						"          status,",
+						"          species,",
+						"          type,",
+						"          gender,",
+						"          origin_name,",
+						"          origin_url,",
+						"          location_name,",
+						"          location_url,",
+						"          image,",
+						"          character_url,",
+						"          created",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"select1 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     deletable:false,",
 						"     insertable:true,",
 						"     updateable:false,",
 						"     upsertable:false,",
+						"     recreate:true,",
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
@@ -7163,6 +7337,66 @@
 			"type": "Microsoft.DataFactory/factories/managedVirtualNetworks",
 			"apiVersion": "2018-06-01",
 			"properties": {},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Json_loc_src')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "pocblobstorage",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "locations.json",
+						"container": "webactivityoutput"
+					}
+				},
+				"schema": {}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/pocblobstorage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/flowlet1')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "Flowlet",
+				"typeProperties": {
+					"sources": [],
+					"sinks": [],
+					"transformations": [
+						{
+							"name": "derivedColumn1"
+						},
+						{
+							"name": "input1"
+						},
+						{
+							"name": "output1"
+						}
+					],
+					"scriptLines": [
+						"input(output(",
+						"          created as string",
+						"     ),",
+						"     order: 0,",
+						"     allowSchemaDrift: true) ~> input1",
+						"input1 derive(created = toTimestamp(created, \"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'\",'UTC')) ~> derivedColumn1",
+						"derivedColumn1 output(mapColumn(",
+						"          each(match(/* All input columns */ true()),",
+						"               /* Input name */ $$ = $$)",
+						"     )) ~> output1"
+					]
+				}
+			},
 			"dependsOn": []
 		}
 	]

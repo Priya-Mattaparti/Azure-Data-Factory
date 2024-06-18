@@ -359,6 +359,42 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/flowlet1')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "Flowlet",
+				"typeProperties": {
+					"sources": [],
+					"sinks": [],
+					"transformations": [
+						{
+							"name": "derivedColumn1"
+						},
+						{
+							"name": "input1"
+						},
+						{
+							"name": "output1"
+						}
+					],
+					"scriptLines": [
+						"input(output(",
+						"          created as string",
+						"     ),",
+						"     order: 0,",
+						"     allowSchemaDrift: true) ~> input1",
+						"input1 derive(created = toTimestamp(created, \"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'\",'UTC')) ~> derivedColumn1",
+						"derivedColumn1 output(mapColumn(",
+						"          each(match(/* All input columns */ true()),",
+						"               /* Input name */ $$ = $$)",
+						"     )) ~> output1"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/AzureSqlTable1')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -476,34 +512,6 @@
 						}
 					}
 				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/pocDataLakeStoragegen2')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/DFfiles')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "pocDataLakeStoragegen2",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"folderPath": "SampleOutput",
-						"fileSystem": "files"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": []
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/pocDataLakeStoragegen2')]"
