@@ -24,9 +24,6 @@
 			"transformations": [
 				{
 					"name": "derivedColumn1"
-				},
-				{
-					"name": "select1"
 				}
 			],
 			"scriptLines": [
@@ -51,30 +48,13 @@
 				"     documentForm: 'arrayOfDocuments',",
 				"     preferredIntegralType: 'integer') ~> source1",
 				"source1 derive(created = toTimestamp(created, \"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'\",'UTC')) ~> derivedColumn1",
-				"derivedColumn1 select(mapColumn(",
-				"          id,",
-				"          created,",
-				"          gender,",
-				"          image_url,",
-				"          location_name,",
-				"          location_url,",
-				"          name,",
-				"          origin_name,",
-				"          origin_url,",
-				"          species,",
-				"          status,",
-				"          type,",
-				"          url",
-				"     ),",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select1",
-				"select1 sink(allowSchemaDrift: true,",
+				"derivedColumn1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
 				"     insertable:true,",
 				"     updateable:false,",
 				"     upsertable:false,",
-				"     recreate:true,",
+				"     truncate:true,",
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
