@@ -265,10 +265,43 @@
 				"typeProperties": {
 					"scripts": [
 						{
-							"type": "Query"
+							"type": "Query",
+							"text": "CREATE VIEW cartoon_details AS\nSELECT \n    c.id,\n\tc.name,\n\tc.status,\n\tc.species,\n\tc.type,\n\tc.gender,\n\tc.image_url,\n\tc.url AS character_url,\n\tc.created AS  character_created,\n\tc.origin_name,\n\tc.origin_url,\n\tc.location_name,\n\tc.location_url,\n\tl.type AS location_type,\n\tl.dimension AS dimension_location,\n\tl.created AS location_created\n\nFROM \n    characters c\nJOIN \n    locations l ON  c.location_name = l.name;\n"
 						}
 					],
 					"scriptBlockExecutionTimeout": "02:00:00"
+				}
+			},
+			{
+				"name": "Lookup1",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "viewcreation",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "select * from dbo.cartoon_details;",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "azsqldb",
+						"type": "DatasetReference"
+					}
 				}
 			}
 		],
