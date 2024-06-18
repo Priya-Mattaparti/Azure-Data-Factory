@@ -1,5 +1,5 @@
 {
-	"name": "fetch data from APIpipeline",
+	"name": "fetch data from APIpipeline_jsondestination",
 	"properties": {
 		"activities": [
 			{
@@ -37,14 +37,13 @@
 									}
 								},
 								"sink": {
-									"type": "DelimitedTextSink",
+									"type": "JsonSink",
 									"storeSettings": {
 										"type": "AzureBlobStorageWriteSettings"
 									},
 									"formatSettings": {
-										"type": "DelimitedTextWriteSettings",
-										"quoteAllText": true,
-										"fileExtension": ".txt"
+										"type": "JsonWriteSettings",
+										"filePattern": "arrayOfObjects"
 									}
 								},
 								"enableStaging": false,
@@ -196,8 +195,7 @@
 											}
 										}
 									],
-									"collectionReference": "$['results']",
-									"mapComplexValuesToString": true
+									"collectionReference": "$['results']"
 								}
 							},
 							"inputs": [
@@ -214,11 +212,11 @@
 							],
 							"outputs": [
 								{
-									"referenceName": "webactoutputdes",
+									"referenceName": "Json_weboutputDes",
 									"type": "DatasetReference",
 									"parameters": {
-										"filename": {
-											"value": "@concat(item(),'s.csv')",
+										"name": {
+											"value": "@concat(item(),'s.json')",
 											"type": "Expression"
 										}
 									}
