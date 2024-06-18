@@ -199,7 +199,13 @@
 							"inputs": [
 								{
 									"referenceName": "RestResourceRickyandMorty",
-									"type": "DatasetReference"
+									"type": "DatasetReference",
+									"parameters": {
+										"url": {
+											"value": "@item()",
+											"type": "Expression"
+										}
+									}
 								}
 							],
 							"outputs": [
@@ -208,7 +214,7 @@
 									"type": "DatasetReference",
 									"parameters": {
 										"filename": {
-											"value": "@concat(item(),'.csv')",
+											"value": "@concat(item(),'s.csv')",
 											"type": "Expression"
 										}
 									}
@@ -223,8 +229,8 @@
 			"Links": {
 				"type": "array",
 				"defaultValue": [
-					"users",
-					"products"
+					"chracter",
+					"location"
 				]
 			}
 		},
