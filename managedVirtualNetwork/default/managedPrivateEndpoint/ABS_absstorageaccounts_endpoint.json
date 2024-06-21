@@ -1,0 +1,7 @@
+{
+	"name": "ABS_absstorageaccounts_endpoint",
+	"properties": {
+		"privateLinkResourceId": "/subscriptions/6053644e-c095-4d41-90ad-43797b9dfe90/resourceGroups/darafactoryseries/providers/Microsoft.Storage/storageAccounts/adfstrorageaccounts",
+		"groupId": "blob"
+	}
+}
